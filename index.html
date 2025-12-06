@@ -159,6 +159,10 @@ button.stop {
 <!-- LYD -->
 <audio id="beep" src="beep.mp3"></audio>
 <audio id="finalBeep" src="langbeep.mp3"></audio>
+<audio id="startSound" src="start.wav"></audio>
+<audio id="roundEndSound" src="endbuzzer.wav"></audio>
+
+
 
 <script>
 let work, rest, stations, rounds, roundPause;
@@ -169,6 +173,8 @@ let mode = "idle";
 let timer = null;
 
 function startTimer() {
+
+    // hent intervallverdiene
     work = Number(document.getElementById("workInput").value);
     rest = Number(document.getElementById("restInput").value);
     stations = Number(document.getElementById("stationsInput").value);
@@ -177,12 +183,27 @@ function startTimer() {
 
     currentRound = 1;
     currentStation = 1;
-
     mode = "work";
-    timeLeft = work;
-    updateDisplay();
-    timer = setInterval(tick, 1000);
+    
+    // hent startlyden
+    const startSound = document.getElementById("startSound");
+
+    // spill startlyd
+    startSound.currentTime = 0;
+    startSound.play();
+
+    // når lyden er ferdig → start nedtellingen!
+    startSound.onended = () => {
+        timeLeft = work;
+        updateDisplay();
+        timer = setInterval(tick, 1000);
+    };
+
+    // vis at appen venter på startlyden
+    document.getElementById("display").innerText = "▶️";
+    document.getElementById("sub").innerText = "Starter...";
 }
+
 
 function stopTimer() {
     clearInterval(timer);
@@ -220,31 +241,32 @@ function tick() {
             mode = "rest";
             timeLeft = rest;
 
-        } else if (mode === "rest") {
-            currentStation++;
+} else if (mode === "rest") {
+    currentStation++;
 
-            if (currentStation > stations) {
-                currentRound++;
+    if (currentStation > stations) {
 
-                if (currentRound > rounds) {
-                    finish();
-                    return;
-                }
+        const roundEndSound = document.getElementById("roundEndSound");
+        roundEndSound.currentTime = 0;
+        roundEndSound.play();
 
-                mode = "roundPause";
-                timeLeft = roundPause;
-                currentStation = 1;
+        currentRound++;
 
-            } else {
-                mode = "work";
-                timeLeft = work;
-            }
-
-        } else if (mode === "roundPause") {
-            mode = "work";
-            timeLeft = work;
+        if (currentRound > rounds) {
+            finish();
+            return;
         }
+
+        mode = "roundPause";
+        timeLeft = roundPause;
+        currentStation = 1;
+
+    } else {
+        mode = "work";
+        timeLeft = work;
     }
+ }
+
 }
 
 function finish() {
@@ -323,4 +345,3 @@ updateSnow();
 
 </body>
 </html>
-
