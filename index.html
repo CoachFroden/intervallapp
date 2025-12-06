@@ -211,15 +211,10 @@ function runStartCountdown() {
         display.classList.add("countdown");
         display.innerText = count;
 
-        document.body.classList.add("blink");
+        blink();
 
-        if (count > 1) {
-            beep.play();
-        } else {
-            longBeep.play();
-        }
-
-        setTimeout(() => document.body.classList.remove("blink"), 300);
+        if (count > 1) beep.play();
+        else longBeep.play();
 
         count--;
 
@@ -312,20 +307,15 @@ function tick() {
     const roundEndSound = document.getElementById("roundEndSound");
 
     /* --- NEDTELLING 3–2–1 --- */
-    if (timeLeft === 3) {
-        beep.play();
+    if (timeLeft === 3 || timeLeft === 2 || timeLeft === 1) {
         blink();
-    }
-    if (timeLeft === 2) {
-        beep.play();
-        blink();
-    }
-    if (timeLeft === 1) {
-        const isLastStation = (mode === "work" && currentStation === stations);
-        if (!isLastStation) {
-            longBeep.play();
+
+        if (timeLeft === 1) {
+            const isLastStation = (mode === "work" && currentStation === stations);
+            if (!isLastStation) longBeep.play();
+        } else {
+            beep.play();
         }
-        blink();
     }
 
     /* --- 10 SEK FØR RUNDEPAUSE SLUTT --- */
@@ -383,8 +373,7 @@ function finish() {
     clearInterval(timer);
     mode = "done";
 
-    const roundEndSound = document.getElementById("roundEndSound");
-    roundEndSound.play();
+    document.getElementById("roundEndSound").play();
 
     document.getElementById("display").innerText = "Ferdig!";
     document.getElementById("sub").innerText = "";
