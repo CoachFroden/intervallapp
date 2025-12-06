@@ -1,354 +1,253 @@
-
 <!DOCTYPE html>
 <html lang="no">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Intervall App</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="manifest" href="manifest.json">
-<script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js");
-}
-</script>
+    <title>Intervall App</title>
 
-<style>
-/* --- VINTERBAKGRUNN --- */
-body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(180deg, #0b1e3d, #0d335f, #1a4c7e);
-    color: white;
-    text-align: center;
-    padding: 20px;
-    margin: 0;
-    overflow-y: auto;                     /* ← SCROLLING FIX */
-    -webkit-overflow-scrolling: touch;    /* Smooth scroll on iPhone */
-}
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0b1e3d">
 
-/* --- CANVAS SNØFALL (SUPERFIX A) --- */
-#snow {
-    position: fixed;        /* Ligger bak alt og dekker skjermen */
-    inset: 0;               /* Topp/bunn/venstre/høyre = 0 */
-    z-index: -10;           /* Ligg bak ALT innhold */
-    pointer-events: none;   /* Ikke blokkér scrolling/trykk */
-}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(180deg, #0b1e3d, #0d335f, #1a4c7e);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+            overflow-y: auto; /* Viktig – gjør at mobilen kan scrolle */
+        }
 
-/* --- GLOWS --- */
-.glow, h1, h2, label, #sub, #display {
-    text-shadow: 0 0 8px #7cc9ff, 0 0 16px #7cc9ff;
-}
+        h1 {
+            font-size: 38px;
+            margin-bottom: 5px;
+            text-shadow: 0 0 12px rgba(150,200,255,0.9);
+        }
 
-/* --- TITLER --- */
-h1 { margin-bottom: 5px; }
-.winter-title {
-    margin-top: -5px;
-    font-size: 24px;
-    opacity: 0.9;
-}
+        h2 {
+            margin-top: 0;
+            font-weight: normal;
+            color: #cde6ff;
+            text-shadow: 0 0 10px rgba(180,220,255,0.8);
+        }
 
-/* --- DISPLAY (NEDTELLING) --- */
-#display {
-    font-size: 70px;
-    margin-top: 20px;
-}
-#sub {
-    font-size: 26px;
-    opacity: 0.8;
-    margin-bottom: 20px;
-}
+        #display {
+            font-size: 70px;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 25px rgba(255,255,255,0.7);
+        }
 
-/* --- CONTROL PANEL (GLASS) --- */
-.controls {
-    margin-top: 20px;
-    text-align: left;
-    display: inline-block;
-    padding: 15px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.10);
-    backdrop-filter: blur(4px);
-    border: 1px solid rgba(255,255,255,0.15);
-    box-shadow: 0 0 12px rgba(100,180,255,0.3);
-}
+        #sub {
+            font-size: 26px;
+            opacity: 0.85;
+            margin-bottom: 30px;
+        }
 
-/* --- INPUT-RADER --- */
-.controls .row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 260px;
-    margin: 10px auto;
-}
+        .controls {
+            margin-top: 25px;
+        }
 
-/* --- INPUT FELT --- */
-.controls label {
-    font-size: 20px;
-    color: white;
-}
-.controls input {
-    font-size: 20px;
-    width: 90px;
-    padding: 4px;
-    text-align: center;
-    border-radius: 6px;
-}
+        button {
+            padding: 12px 25px;
+            margin: 8px;
+            font-size: 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
 
-/* --- KNAPPER --- */
-button {
-    background: #28a745;
-    color: white;
-    border: none;
-    padding: 18px 40px;
-    margin: 10px;
-    font-size: 24px;
-    border-radius: 12px;
-    cursor: pointer;
-    width: 80%;
-}
-button.stop {
-    background: #dc3545;
-}
+        .start-btn { background: #2ecc71; }
+        .stop-btn { background: #e74c3c; }
+        .pause-btn { background: #f1c40f; }
 
-/* --- BLINK 3-2-1 --- */
-.blink {
-    animation: blinkEffect 0.25s linear;
-}
-@keyframes blinkEffect {
-    from { filter: brightness(1); }
-    to   { filter: brightness(2.2); }
-}
-</style>
+        input {
+            width: 90px;
+            padding: 8px;
+            font-size: 18px;
+            margin: 5px;
+            border-radius: 6px;
+            border: none;
+            text-align: center;
+        }
+    </style>
 </head>
 
 <body>
 
-<!-- SNØ CANVAS (SUPERFIX A - LIGGER BAK INNHOLD) -->
-<canvas id="snow"></canvas>
+<h1>Intervall App</h1>
+<h2>Vintertrening 2026 ❄️</h2>
 
-<h1 class="glow">Intervall App</h1>
-<h2 class="glow winter-title">Vintertrening 2026 ❄️</h2>
+<div>
+    <label>Arbeid (sek): </label>
+    <input id="workInput" type="number" value="30"><br>
 
-<div class="controls">
-    <div class="row">
-        <label>Arbeid (sek):</label>
-        <input id="workInput" type="number" value="30">
-    </div>
-    <div class="row">
-        <label>Pause (sek):</label>
-        <input id="restInput" type="number" value="15">
-    </div>
-    <div class="row">
-        <label>Stasjoner:</label>
-        <input id="stationsInput" type="number" value="10">
-    </div>
-    <div class="row">
-        <label>Runder:</label>
-        <input id="roundsInput" type="number" value="2">
-    </div>
-    <div class="row">
-        <label>Rundepause (sek):</label>
-        <input id="roundPauseInput" type="number" value="90">
-    </div>
+    <label>Pause (sek): </label>
+    <input id="restInput" type="number" value="15"><br>
+
+    <label>Runde-pause (sek): </label>
+    <input id="roundPauseInput" type="number" value="60"><br>
+
+    <label>Antall stasjoner: </label>
+    <input id="stationsInput" type="number" value="10"><br>
+
+    <label>Antall runder: </label>
+    <input id="roundsInput" type="number" value="3"><br>
 </div>
 
 <div id="display">00</div>
-<div id="sub">Trykk start</div>
+<div id="sub"></div>
 
-<button onclick="startTimer()">Start</button>
-<button class="stop" onclick="stopTimer()">Stopp</button>
+<div class="controls">
+    <button class="start-btn" onclick="startInterval()">Start</button>
+    <button class="pause-btn" onclick="pauseInterval()">Pause</button>
+    <button class="stop-btn" onclick="stopInterval()">Stopp</button>
+</div>
 
-<!-- LYD -->
-<audio id="beep" src="beep.mp3"></audio>
-<audio id="finalBeep" src="langbeep.mp3"></audio>
+<!-- Lydfiler -->
 <audio id="startSound" src="start.wav"></audio>
-<audio id="roundEndSound" src="endbuzzer.wav"></audio>
-
-
+<audio id="beep321" src="beep.mp3"></audio>
+<audio id="stationEnd" src="langbeep.mp3"></audio>
+<audio id="roundEnd" src="endbuzzer.wav"></audio>
 
 <script>
-let work, rest, stations, rounds, roundPause;
+let workTime, restTime, roundPauseTime, stations, rounds;
 let currentStation = 1;
 let currentRound = 1;
-let timeLeft;
-let mode = "idle";
-let timer = null;
 
-function startTimer() {
+let timeLeft = 0;
+let mode = "idle"; 
+let timerInterval = null;
 
-    // hent intervallverdiene
-    work = Number(document.getElementById("workInput").value);
-    rest = Number(document.getElementById("restInput").value);
-    stations = Number(document.getElementById("stationsInput").value);
-    rounds = Number(document.getElementById("roundsInput").value);
-    roundPause = Number(document.getElementById("roundPauseInput").value);
+// ------------- HJELPEFUNKSJONER -----------------
+function playBeep321(sec) {
+    if (sec <= 3 && sec > 0) {
+        beep321.play();
+    }
+}
 
-    currentRound = 1;
-    currentStation = 1;
-    mode = "work";
-    
-    // hent startlyden
-    const startSound = document.getElementById("startSound");
+// ------------- START -----------------
+function startInterval() {
 
-    // spill startlyd
-    startSound.currentTime = 0;
     startSound.play();
 
-    // når lyden er ferdig → start nedtellingen!
     startSound.onended = () => {
-        timeLeft = work;
+        workTime = Number(workInput.value);
+        restTime = Number(restInput.value);
+        roundPauseTime = Number(roundPauseInput.value);
+        stations = Number(stationsInput.value);
+        rounds = Number(roundsInput.value);
+
+        currentStation = 1;
+        currentRound = 1;
+
+        timeLeft = workTime;
+        mode = "work";
+
         updateDisplay();
-        timer = setInterval(tick, 1000);
+
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(tick, 1000);
     };
-
-    // vis at appen venter på startlyden
-    document.getElementById("display").innerText = "▶️";
-    document.getElementById("sub").innerText = "Starter...";
 }
 
+// ------------- PAUSE -----------------
+function pauseInterval() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+}
 
-function stopTimer() {
-    clearInterval(timer);
-    timer = null;
+function stopInterval() {
+    clearInterval(timerInterval);
+    timerInterval = null;
     mode = "idle";
-    document.getElementById("display").innerText = "00";
-    document.getElementById("sub").innerText = "Stoppet";
+    display.innerText = "00";
+    sub.innerText = "";
 }
 
+// ------------- TICK -----------------
 function tick() {
-    const shortBeep = document.getElementById("beep");
-    const longBeep = document.getElementById("finalBeep");
-
-    // 3–2–1 blink
-    if (timeLeft === 3 || timeLeft === 2) {
-        document.body.classList.add("blink");
-        shortBeep.currentTime = 0;
-        shortBeep.play();
-        setTimeout(() => document.body.classList.remove("blink"), 300);
-    }
-
-    if (timeLeft === 1) {
-        document.body.classList.add("blink");
-        longBeep.currentTime = 0;
-        longBeep.play();
-        setTimeout(() => document.body.classList.remove("blink"), 300);
-    }
+    if (mode === "idle") return;
 
     timeLeft--;
     updateDisplay();
 
-    if (timeLeft === 0) {
+    playBeep321(timeLeft);
 
-        if (mode === "work") {
+    // Når tiden er ferdig i en hvilken som helst modus:
+    if (timeLeft <= 0) {
+        handleTransition();
+    }
+}
+
+// ------------- OPPDATER SKJERM -----------------
+function updateDisplay() {
+    display.innerText = timeLeft;
+    sub.innerHTML = `${modeText()}<br>Runde ${currentRound}/${rounds} &nbsp; | &nbsp; Stasjon ${currentStation}/${stations}`;
+}
+
+function modeText() {
+    if (mode === "work") return "Arbeid";
+    if (mode === "rest") return "Pause";
+    if (mode === "roundPause") return "Runde-pause";
+    return "";
+}
+
+// ------------- HVA SKJER NÅR EN TID ER FERDIG -----------------
+function handleTransition() {
+
+    if (mode === "work") {
+
+        // Var dette siste stasjon i runden?
+        if (currentStation < stations) {
+
+            // Vanlig stasjon ferdig
+            stationEnd.play();
+
             mode = "rest";
-            timeLeft = rest;
-
-        } else if (mode === "rest") {
+            timeLeft = restTime;
             currentStation++;
 
-            if (currentStation > stations) {
+        } else {
 
-                const roundEndSound = document.getElementById("roundEndSound");
-                roundEndSound.currentTime = 0;
-                roundEndSound.play();
+            // Siste stasjon → Runden er ferdig
+            roundEnd.play();
 
-                currentRound++;
+            currentRound++;
 
-                if (currentRound > rounds) {
-                    finish();
-                    return;
-                }
-
-                mode = "roundPause";
-                timeLeft = roundPause;
-                currentStation = 1;
-
-            } else {
-                mode = "work";
-                timeLeft = work;
+            if (currentRound > rounds) {
+                stopInterval();
+                return;
             }
 
-        } else if (mode === "roundPause") {
-            mode = "work";
-            timeLeft = work;
+            mode = "roundPause";
+            timeLeft = roundPauseTime;
+            currentStation = 1;
         }
-
-    } // END if timeLeft === 0
-} // END tick()
-
-function finish() {
-    clearInterval(timer);
-    timer = null;
-    mode = "done";
-    document.getElementById("finalBeep").play();
-    document.getElementById("display").innerText = "Ferdig!";
-    document.getElementById("sub").innerText = "";
-}
-
-function updateDisplay() {
-    if (mode === "idle") return;
-
-    document.getElementById("display").innerText = timeLeft;
-
-    let text = "";
-    if (mode === "work") text = "Arbeid";
-    if (mode === "rest") text = "Pause";
-    if (mode === "roundPause") text = "Runde-pause";
-
-    document.getElementById("sub").innerHTML =
-        `${text}<br>Runde ${currentRound}/${rounds} | Stasjon ${currentStation}/${stations}`;
-}
-</script>
-
-<!-- SNØFALL SCRIPT -->
-<script>
-const canvas = document.getElementById('snow');
-const ctx = canvas.getContext('2d');
-let flakes = [];
-
-function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
-resize();
-window.onresize = resize;
-
-function createFlake() {
-    return {
-        x: Math.random() * canvas.width,
-        y: -10,
-        size: Math.random() * 4 + 1,
-        speed: Math.random() * 1 + 0.5,
-        drift: Math.random() * 1 - 0.5
-    };
-}
-
-function updateSnow() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    if (flakes.length < 150) {
-        flakes.push(createFlake());
     }
 
-    flakes.forEach((f, i) => {
-        f.y += f.speed;
-        f.x += f.drift;
+    else if (mode === "rest") {
 
-        ctx.fillStyle = "rgba(255,255,255,0.8)";
-        ctx.beginPath();
-        ctx.arc(f.x, f.y, f.size, 0, Math.PI * 2);
-        ctx.fill();
+        // Etter vanlig pause → alltid arbeid igjen
+        mode = "work";
+        timeLeft = workTime;
+    }
 
-        if (f.y > canvas.height) {
-            flakes[i] = createFlake();
-        }
-    });
+    else if (mode === "roundPause") {
 
-    requestAnimationFrame(updateSnow);
+        // Etter runde-pause → arbeid igjen
+        mode = "work";
+        timeLeft = workTime;
+    }
 
+    updateDisplay();
 }
-updateSnow();
+
 </script>
 
 </body>
 </html>
-
