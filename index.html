@@ -181,7 +181,8 @@ button.pause { background: #f1c40f; }
 <button class="stop" onclick="openStopModal()">Stopp</button>
 
 <!-- LYDER -->
-<audio id="beep" src="beep.mp3"></audio>
+<audio id="beep1" src="beep.mp3"></audio>
+<audio id="beep2" src="beep.mp3"></audio>
 <audio id="finalBeep" src="langbeep.mp3"></audio>
 <audio id="roundEndSound" src="endbuzzer.wav"></audio>
 
@@ -194,6 +195,17 @@ let mode = "idle";
 let timer = null;
 let paused = false;
 
+/* -------- DOBBELT BEEP SYSTEM -------- */
+let beepToggle = false;
+
+function playBeep() {
+    const b = beepToggle ? document.getElementById("beep1") 
+                         : document.getElementById("beep2");
+    b.currentTime = 0;
+    b.play();
+    beepToggle = !beepToggle;
+}
+
 /* ------------- START MED 5–1 NEDTELLING ------------- */
 
 function startSequence() {
@@ -204,7 +216,6 @@ function startSequence() {
 function runStartCountdown() {
     let count = 5;
     const display = document.getElementById("display");
-    const beep = document.getElementById("beep");
     const longBeep = document.getElementById("finalBeep");
 
     let interval = setInterval(() => {
@@ -213,7 +224,7 @@ function runStartCountdown() {
 
         blink();
 
-        if (count > 1) beep.play();
+        if (count > 1) playBeep();
         else longBeep.play();
 
         count--;
@@ -227,7 +238,7 @@ function runStartCountdown() {
             setTimeout(() => {
                 display.classList.remove("countdown");
                 startTimer();
-            }, 1500);
+            }, 700);
         }
     }, 1000);
 }
@@ -302,7 +313,6 @@ function stopTimer(resetDisplay = true) {
 function tick() {
     if (paused) return;
 
-    const beep = document.getElementById("beep");
     const longBeep = document.getElementById("finalBeep");
     const roundEndSound = document.getElementById("roundEndSound");
 
@@ -314,7 +324,7 @@ function tick() {
             const isLastStation = (mode === "work" && currentStation === stations);
             if (!isLastStation) longBeep.play();
         } else {
-            beep.play();
+            playBeep();  // <-- alltid beep på 3 og 2
         }
     }
 
