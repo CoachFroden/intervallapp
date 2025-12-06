@@ -241,33 +241,38 @@ function tick() {
             mode = "rest";
             timeLeft = rest;
 
-} else if (mode === "rest") {
-    currentStation++;
+        } else if (mode === "rest") {
+            currentStation++;
 
-    if (currentStation > stations) {
+            if (currentStation > stations) {
 
-        const roundEndSound = document.getElementById("roundEndSound");
-        roundEndSound.currentTime = 0;
-        roundEndSound.play();
+                const roundEndSound = document.getElementById("roundEndSound");
+                roundEndSound.currentTime = 0;
+                roundEndSound.play();
 
-        currentRound++;
+                currentRound++;
 
-        if (currentRound > rounds) {
-            finish();
-            return;
+                if (currentRound > rounds) {
+                    finish();
+                    return;
+                }
+
+                mode = "roundPause";
+                timeLeft = roundPause;
+                currentStation = 1;
+
+            } else {
+                mode = "work";
+                timeLeft = work;
+            }
+
+        } else if (mode === "roundPause") {
+            mode = "work";
+            timeLeft = work;
         }
 
-        mode = "roundPause";
-        timeLeft = roundPause;
-        currentStation = 1;
-
-    } else {
-        mode = "work";
-        timeLeft = work;
-    }
- }
-
-}
+    } // END if timeLeft === 0
+} // END tick()
 
 function finish() {
     clearInterval(timer);
