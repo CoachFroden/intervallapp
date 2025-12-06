@@ -169,13 +169,10 @@ function startSequence() {
     startSound.currentTime = 0;
     startSound.play();
 
-    document.getElementById("display").innerText = "▶️";
-    document.getElementById("sub").innerText = "Starter...";
-
-    startSound.onended = () => {
-        runCountdown();
-    };
+    // Start nedtellingen samtidig som lyden
+    runCountdown();
 }
+
 
 function runCountdown() {
     let count = 3;
@@ -245,8 +242,6 @@ function stopTimer() {
     mode = "idle";
     paused = false;
 
-    document.getElementById("display").innerText = "00";
-    document.getElementById("sub").innerText = "Stoppet";
 }
 
 /* ---------------- LOGIKK FOR TICK ---------------- */
