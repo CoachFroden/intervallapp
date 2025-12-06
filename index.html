@@ -106,7 +106,7 @@ button.pause { background: #f1c40f; }
     to   { filter: brightness(2.2); }
 }
 
-/* -------- MODAL (A: frost glass + blå glød) -------- */
+/* -------- MODAL -------- */
 
 .modal {
     display: none;
@@ -184,7 +184,6 @@ button.pause { background: #f1c40f; }
 <audio id="beep" src="beep.mp3"></audio>
 <audio id="finalBeep" src="langbeep.mp3"></audio>
 <audio id="roundEndSound" src="endbuzzer.wav"></audio>
-<audio id="startSound" src="start.wav"></audio>
 
 <script>
 let work, rest, stations, rounds, roundPause;
@@ -195,33 +194,31 @@ let mode = "idle";
 let timer = null;
 let paused = false;
 
-/* ------------- START MED NEDTELLING ------------- */
+/* ------------- START MED 5–1 NEDTELLING ------------- */
 
 function startSequence() {
     stopTimer(false);
-
-    const startSound = document.getElementById("startSound");
-    startSound.currentTime = 0;
-    startSound.play();
-
-    runCountdown();
+    runStartCountdown();
 }
 
-/* ------------- 3–2–1 NEDTELLING ------------- */
-
-function runCountdown() {
-    let count = 3;
+function runStartCountdown() {
+    let count = 5;
     const display = document.getElementById("display");
     const beep = document.getElementById("beep");
-    const finalBeep = document.getElementById("finalBeep");
+    const longBeep = document.getElementById("finalBeep");
 
     let interval = setInterval(() => {
         display.classList.add("countdown");
         display.innerText = count;
 
         document.body.classList.add("blink");
-        beep.currentTime = 0;
-        beep.play();
+
+        if (count > 1) {
+            beep.play();
+        } else {
+            longBeep.play();
+        }
+
         setTimeout(() => document.body.classList.remove("blink"), 300);
 
         count--;
@@ -230,7 +227,7 @@ function runCountdown() {
             clearInterval(interval);
 
             display.innerText = "START!";
-            finalBeep.play();
+            longBeep.play();
 
             setTimeout(() => {
                 display.classList.remove("countdown");
@@ -314,21 +311,24 @@ function tick() {
     const longBeep = document.getElementById("finalBeep");
     const roundEndSound = document.getElementById("roundEndSound");
 
-    /* 3–2–1 før slutt */
-    if (timeLeft === 3 || timeLeft === 2 || timeLeft === 1) {
-        const lastStation = (mode === "work" && currentStation === stations);
-
-        document.body.classList.add("blink");
-        beep.play(); // alltid beep for nedtellingen
-        setTimeout(() => document.body.classList.remove("blink"), 300);
-
-        /* lang pip bare hvis ikke siste stasjon */
-        if (timeLeft === 1 && !lastStation) {
+    /* --- NEDTELLING 3–2–1 --- */
+    if (timeLeft === 3) {
+        beep.play();
+        blink();
+    }
+    if (timeLeft === 2) {
+        beep.play();
+        blink();
+    }
+    if (timeLeft === 1) {
+        const isLastStation = (mode === "work" && currentStation === stations);
+        if (!isLastStation) {
             longBeep.play();
         }
+        blink();
     }
 
-    /* 10 sek før rundepause slutt */
+    /* --- 10 SEK FØR RUNDEPAUSE SLUTT --- */
     if (mode === "roundPause" && timeLeft === 10) {
         longBeep.play();
     }
@@ -338,7 +338,7 @@ function tick() {
 
     if (timeLeft > 0) return;
 
-    /* ---- OVERGANGER ---- */
+    /* ---------------- OVERGANGER ---------------- */
 
     if (mode === "work") {
         if (currentStation === stations) {
@@ -369,6 +369,12 @@ function tick() {
     }
 
     updateDisplay();
+}
+
+/* ---------- BLINK ---------- */
+function blink() {
+    document.body.classList.add("blink");
+    setTimeout(() => document.body.classList.remove("blink"), 300);
 }
 
 /* ------------- FERDIG ------------- */
