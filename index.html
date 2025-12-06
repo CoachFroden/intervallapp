@@ -105,6 +105,46 @@ button.pause { background: #f1c40f; }
     from { filter: brightness(1); }
     to   { filter: brightness(2.2); }
 }
+
+/* -------- MODAL (A: frost glass + blå glød) -------- */
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background: rgba(255,255,255,0.15);
+    padding: 25px;
+    border-radius: 14px;
+    width: 80%;
+    max-width: 350px;
+    color: white;
+    text-align: center;
+    box-shadow: 0 0 22px rgba(120,180,255,0.7);
+    border: 1px solid rgba(255,255,255,0.4);
+    backdrop-filter: blur(10px);
+}
+
+.modal-btn {
+    padding: 12px 20px;
+    margin: 10px;
+    border-radius: 10px;
+    font-size: 18px;
+    border: none;
+    cursor: pointer;
+    width: 40%;
+}
+
+.modal-btn.cancel { background: #2ecc71; }
+.modal-btn.confirm { background: #e74c3c; }
+
 </style>
 </head>
 
@@ -115,27 +155,22 @@ button.pause { background: #f1c40f; }
 <h1 class="glow">Intervall App</h1>
 <h2 class="glow winter-title">Vintertrening 2026 ❄️</h2>
 
+<!-- ------------ STOPP-MODAL ------------ -->
+<div id="confirmModal" class="modal">
+    <div class="modal-content">
+        <h3>Avslutte økten?</h3>
+        <p>Vil du nullstille og gå tilbake til start?</p>
+        <button class="modal-btn cancel" onclick="closeModal()">Fortsett</button>
+        <button class="modal-btn confirm" onclick="confirmStop()">Nullstill</button>
+    </div>
+</div>
+
 <div class="controls">
-    <div class="row">
-        <label>Arbeid (sek):</label>
-        <input id="workInput" type="number" value="30">
-    </div>
-    <div class="row">
-        <label>Pause (sek):</label>
-        <input id="restInput" type="number" value="15">
-    </div>
-    <div class="row">
-        <label>Stasjoner:</label>
-        <input id="stationsInput" type="number" value="10">
-    </div>
-    <div class="row">
-        <label>Runder:</label>
-        <input id="roundsInput" type="number" value="2">
-    </div>
-    <div class="row">
-        <label>Rundepause:</label>
-        <input id="roundPauseInput" type="number" value="90">
-    </div>
+    <div class="row"><label>Arbeid (sek):</label><input id="workInput" type="number" value="30"></div>
+    <div class="row"><label>Pause (sek):</label><input id="restInput" type="number" value="15"></div>
+    <div class="row"><label>Stasjoner:</label><input id="stationsInput" type="number" value="10"></div>
+    <div class="row"><label>Runder:</label><input id="roundsInput" type="number" value="2"></div>
+    <div class="row"><label>Rundepause:</label><input id="roundPauseInput" type="number" value="90"></div>
 </div>
 
 <div id="display">00</div>
@@ -143,11 +178,11 @@ button.pause { background: #f1c40f; }
 
 <button onclick="startSequence()">Start</button>
 <button class="pause" onclick="togglePause()">Pause</button>
-<button class="stop" onclick="stopTimer()">Stopp</button>
+<button class="stop" onclick="openStopModal()">Stopp</button>
 
 <!-- LYDER -->
-<audio id="beep" src="beep.mp3"></audio>          
-<audio id="finalBeep" src="langbeep.mp3"></audio>  
+<audio id="beep" src="beep.mp3"></audio>
+<audio id="finalBeep" src="langbeep.mp3"></audio>
 <audio id="roundEndSound" src="endbuzzer.wav"></audio>
 <audio id="startSound" src="start.wav"></audio>
 
@@ -160,19 +195,19 @@ let mode = "idle";
 let timer = null;
 let paused = false;
 
-/* ---------------- START MED 3–2–1 NEDTELLING ---------------- */
+/* ------------- START MED NEDTELLING ------------- */
 
 function startSequence() {
-    stopTimer();
+    stopTimer(false);
 
     const startSound = document.getElementById("startSound");
     startSound.currentTime = 0;
     startSound.play();
 
-    // Start nedtellingen samtidig som lyden
     runCountdown();
 }
 
+/* ------------- 3–2–1 NEDTELLING ------------- */
 
 function runCountdown() {
     let count = 3;
@@ -205,7 +240,7 @@ function runCountdown() {
     }, 1000);
 }
 
-/* ---------------- HOVEDTIMEREN ---------------- */
+/* ------------- START TIMER ------------- */
 
 function startTimer() {
     work = Number(workInput.value);
@@ -216,14 +251,14 @@ function startTimer() {
 
     currentStation = 1;
     currentRound = 1;
-
     mode = "work";
     timeLeft = work;
 
     updateDisplay();
-
     timer = setInterval(tick, 1000);
 }
+
+/* ------------- PAUSE ------------- */
 
 function togglePause() {
     paused = !paused;
@@ -236,39 +271,64 @@ function togglePause() {
     }
 }
 
-function stopTimer() {
-    clearInterval(timer);
-    timer = null;
-    mode = "idle";
-    paused = false;
+/* ------------- STOPP (MED MODAL) ------------- */
 
+function openStopModal() {
+    document.getElementById("confirmModal").style.display = "flex";
 }
 
-/* ---------------- LOGIKK FOR TICK ---------------- */
+function closeModal() {
+    document.getElementById("confirmModal").style.display = "none";
+}
+
+function confirmStop() {
+    closeModal();
+    stopTimer(true);
+}
+
+function stopTimer(resetDisplay = true) {
+    if (timer) {
+        clearInterval(timer);
+        timer = null;
+    }
+
+    paused = false;
+    mode = "idle";
+    currentStation = 1;
+    currentRound = 1;
+    timeLeft = 0;
+
+    if (resetDisplay) {
+        document.getElementById("display").classList.remove("countdown");
+        document.getElementById("display").innerText = "00";
+        document.getElementById("sub").innerText = "Stoppet";
+    }
+}
+
+/* ------------- TICK ------------- */
 
 function tick() {
     if (paused) return;
 
-    const shortBeep = document.getElementById("beep");
+    const beep = document.getElementById("beep");
     const longBeep = document.getElementById("finalBeep");
     const roundEndSound = document.getElementById("roundEndSound");
 
-    /* 3–2–1 for ALLE MODI */
-    if (timeLeft === 3 || timeLeft === 2) {
-        document.body.classList.add("blink");
-        shortBeep.play();
-        setTimeout(() => document.body.classList.remove("blink"), 300);
-    }
+    /* 3–2–1 før slutt */
+    if (timeLeft === 3 || timeLeft === 2 || timeLeft === 1) {
+        const lastStation = (mode === "work" && currentStation === stations);
 
-    /* 1 SEK – men IKKE lang pip i slutten av runde */
-    if (timeLeft === 1) {
-        const isLastStation = (mode === "work" && currentStation === stations);
-        if (!isLastStation) {
+        document.body.classList.add("blink");
+        beep.play(); // alltid beep for nedtellingen
+        setTimeout(() => document.body.classList.remove("blink"), 300);
+
+        /* lang pip bare hvis ikke siste stasjon */
+        if (timeLeft === 1 && !lastStation) {
             longBeep.play();
         }
     }
 
-    /* 10 SEK IGJEN AV RUNDEPAUSE → lang pip */
+    /* 10 sek før rundepause slutt */
     if (mode === "roundPause" && timeLeft === 10) {
         longBeep.play();
     }
@@ -278,13 +338,10 @@ function tick() {
 
     if (timeLeft > 0) return;
 
-    /* ---------------- OVERGANGER ---------------- */
+    /* ---- OVERGANGER ---- */
 
     if (mode === "work") {
-        const lastStation = (currentStation === stations);
-
-        if (lastStation) {
-            /* RUNDE FERDIG */
+        if (currentStation === stations) {
             roundEndSound.play();
 
             currentRound++;
@@ -295,27 +352,26 @@ function tick() {
             currentStation = 1;
 
         } else {
-            /* VANLIG STASJON FERDIG */
             mode = "rest";
             timeLeft = rest;
         }
     }
 
     else if (mode === "rest") {
-        /* Etter pause → neste stasjon */
         currentStation++;
         mode = "work";
         timeLeft = work;
     }
 
     else if (mode === "roundPause") {
-        /* Etter runde-pause → start ny runde */
         mode = "work";
         timeLeft = work;
     }
 
     updateDisplay();
 }
+
+/* ------------- FERDIG ------------- */
 
 function finish() {
     clearInterval(timer);
@@ -327,6 +383,8 @@ function finish() {
     document.getElementById("display").innerText = "Ferdig!";
     document.getElementById("sub").innerText = "";
 }
+
+/* ------------- DISPLAY ------------- */
 
 function updateDisplay() {
     if (mode === "idle") return;
@@ -342,7 +400,8 @@ function updateDisplay() {
         `${txt}<br>Runde ${currentRound}/${rounds} | Stasjon ${currentStation}/${stations}`;
 }
 
-/* ---------------- SNØ ---------------- */
+/* ------------- SNØ ------------- */
+
 const canvas = document.getElementById('snow');
 const ctx = canvas.getContext('2d');
 let flakes = [];
