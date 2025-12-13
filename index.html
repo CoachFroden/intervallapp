@@ -3,422 +3,177 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Intervall App</title>
-
-<link rel="manifest" href="manifest.json">
-<!--
-<script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js");
-}
-</script>
--->
+<title>Intervalltimer</title>
 
 <style>
 body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(180deg, #0b1e3d, #0d335f, #1a4c7e);
-    color: white;
+    font-family: system-ui, sans-serif;
     text-align: center;
-    padding: 20px;
     margin: 0;
-    overflow-y: auto;
-}
-
-#snow {
-    position: fixed;
-    inset: 0;
-    z-index: -10;
-    pointer-events: none;
-}
-
-.glow, h1, h2, label, #sub, #display {
-    text-shadow: 0 0 8px #7cc9ff, 0 0 16px #7cc9ff;
-}
-
-h1 { margin-bottom: 5px; }
-.winter-title {
-    margin-top: -5px;
-    font-size: 24px;
-    opacity: 0.9;
+    padding: 20px;
 }
 
 #display {
-    font-size: 80px;
-    margin-top: 20px;
-}
-#sub {
-    font-size: 26px;
-    opacity: 0.8;
-    margin-bottom: 20px;
-}
-
-.controls {
-    margin-top: 20px;
-    text-align: left;
-    display: inline-block;
-    padding: 15px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.10);
-    backdrop-filter: blur(4px);
-    border: 1px solid rgba(255,255,255,0.15);
-}
-
-.controls .row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 260px;
-    margin: 10px auto;
-}
-
-.controls input {
-    font-size: 20px;
-    width: 90px;
-    padding: 4px;
-    text-align: center;
-    border-radius: 6px;
+    font-size: 72px;
+    margin: 20px 0;
 }
 
 button {
-    background: #28a745;
-    color: white;
-    border: none;
-    padding: 18px 40px;
-    margin: 10px;
-    font-size: 24px;
-    border-radius: 12px;
-    cursor: pointer;
-    width: 80%;
-}
-button.stop { background: #dc3545; }
-button.pause { background: #f1c40f; }
-
-.countdown {
-    font-size: 120px;
-    margin-top: 40px;
-    text-shadow: 0 0 25px white;
-}
-
-/* -------- MODAL -------- */
-
-.modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.55);
-    backdrop-filter: blur(4px);
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
-
-.modal-content {
-    background: rgba(255,255,255,0.15);
-    padding: 25px;
-    border-radius: 14px;
-    width: 80%;
-    max-width: 350px;
-    color: white;
-    text-align: center;
-    box-shadow: 0 0 22px rgba(120,180,255,0.7);
-    border: 1px solid rgba(255,255,255,0.4);
-    backdrop-filter: blur(10px);
-}
-
-.modal-btn {
-    padding: 12px 20px;
-    margin: 10px;
-    border-radius: 10px;
     font-size: 18px;
-    border: none;
-    cursor: pointer;
-    width: 40%;
+    padding: 10px 20px;
 }
-
-.modal-btn.cancel { background: #2ecc71; }
-.modal-btn.confirm { background: #e74c3c; }
-
 </style>
 </head>
 
 <body>
 
-<canvas id="snow"></canvas>
+<h1>Intervalltimer</h1>
 
-<h1 class="glow">Intervall App</h1>
-<h2 class="glow winter-title">Vintertrening 2026 ❄️</h2>
-
-<!-- ------------ STOPP-MODAL ------------ -->
-<div id="confirmModal" class="modal">
-    <div class="modal-content">
-        <h3>Avslutte økten?</h3>
-        <p>Vil du nullstille og gå tilbake til start?</p>
-        <button class="modal-btn cancel" onclick="closeModal()">Fortsett</button>
-        <button class="modal-btn confirm" onclick="confirmStop()">Nullstill</button>
-    </div>
-</div>
-
-<div class="controls">
-    <div class="row"><label>Arbeid (sek):</label><input id="workInput" type="number" value="30"></div>
-    <div class="row"><label>Pause (sek):</label><input id="restInput" type="number" value="15"></div>
-    <div class="row"><label>Stasjoner:</label><input id="stationsInput" type="number" value="10"></div>
-    <div class="row"><label>Runder:</label><input id="roundsInput" type="number" value="2"></div>
-    <div class="row"><label>Rundepause:</label><input id="roundPauseInput" type="number" value="90"></div>
-</div>
-
-<div id="display">00</div>
-<div id="sub">Trykk start</div>
+<div id="display">0</div>
+<div id="sub"></div>
 
 <button onclick="startSequence()">Start</button>
-<button class="pause" onclick="togglePause()">Pause</button>
-<button class="stop" onclick="openStopModal()">Stopp</button>
+<button onclick="togglePause()">Pause</button>
 
 <!-- LYDER -->
 <audio id="beep1" src="beep.wav"></audio>
 <audio id="beep2" src="beep.wav"></audio>
 <audio id="finalBeep" src="langbeep.wav"></audio>
-<audio id="roundEndSound" src="endbuzzer.wav"></audio>
+
 <audio id="readySound" src="gjordereklare.mp3"></audio>
 <audio id="pauseWarningSound" src="pauseneroveromti.mp3"></audio>
-
-
+<audio id="roundEndSound" src="endbuzzer.wav"></audio>
 
 <script>
-let work, rest, stations, rounds, roundPause;
+/* ---------- GLOBAL STATE ---------- */
+
+let timer = null;
+let startCountdownTimer = null;
+
+let paused = false;
+
+let mode = "work"; // work | rest | roundPause
+let timeLeft = 0;
+
+let work = 30;
+let rest = 15;
+let roundPause = 60;
+
+let stations = 4;
+let rounds = 3;
+
 let currentStation = 1;
 let currentRound = 1;
-let timeLeft = 0;
-let mode = "idle";
-let timer = null;
-let paused = false;
-let readySoundPlayed = false;
 
-/* -------- DOBBELT BEEP SYSTEM -------- */
 let beepToggle = false;
 
+/* ---------- HJELPEFUNKSJONER ---------- */
+
+function updateDisplay() {
+    document.getElementById("display").innerText = timeLeft;
+    document.getElementById("sub").innerText =
+        `Runde ${currentRound}/${rounds} – Stasjon ${currentStation}/${stations} (${mode})`;
+}
+
 function playBeep() {
-    const b = beepToggle ? document.getElementById("beep1") 
-                         : document.getElementById("beep2");
-    b.currentTime = 0;
-    b.play();
+    const beep = beepToggle
+        ? document.getElementById("beep1")
+        : document.getElementById("beep2");
+
+    beep.currentTime = 0;
+    beep.play();
     beepToggle = !beepToggle;
 }
 
-/* ------------- START MED 5–1 NEDTELLING ------------- */
+/* ---------- STARTSEKVENS ---------- */
 
 function startSequence() {
-    stopTimer(false);
+    stopAllTimers();
+    paused = false;
 
-    const pauseSound = document.getElementById("pauseWarningSound");
-    pauseSound.volume = 0;
+    // 🔓 UNLOCK alle WAV-lyder (iOS)
+    const unlock = id => {
+        const a = document.getElementById(id);
+        a.volume = 0;
+        a.play().then(() => {
+            a.pause();
+            a.currentTime = 0;
+            a.volume = 1;
+        }).catch(() => {});
+    };
 
-    pauseSound.play().then(() => {
-        setTimeout(() => {
-            pauseSound.pause();
-            pauseSound.currentTime = 0;
-            pauseSound.volume = 1;
-        }, 0);
-    }).catch(() => {});
+    unlock("beep1");
+    unlock("beep2");
+    unlock("finalBeep");
+    unlock("pauseWarningSound");
 
-const beep1 = document.getElementById("beep1");
-const beep2 = document.getElementById("beep2");
-const longBeep = document.getElementById("finalBeep");
-
-// korte beep (begge må unlockes)
-beep1.volume = 0;
-beep2.volume = 0;
-
-beep1.play().then(() => {
-    beep1.pause();
-    beep1.currentTime = 0;
-    beep1.volume = 1;
-}).catch(() => {});
-
-beep2.play().then(() => {
-    beep2.pause();
-    beep2.currentTime = 0;
-    beep2.volume = 1;
-}).catch(() => {});
-
-// lang beep
-longBeep.volume = 0;
-longBeep.play().then(() => {
-    longBeep.pause();
-    longBeep.currentTime = 0;
-    longBeep.volume = 1;
-}).catch(() => {});
-
-
-    runFullStartCountdown();
+    runStartCountdown();
 }
 
-
-
-
-
-function runFullStartCountdown() {
+function runStartCountdown() {
     let count = 15;
-    readySoundPlayed = false;
+    let readyPlayed = false;
 
-    const display = document.getElementById("display");
     const readySound = document.getElementById("readySound");
 
-    const interval = setInterval(() => {
-
-        display.classList.add("countdown");
-        display.innerText = count;
-
-        /* 🔊 LYD */
-
-        // Start "gjør deg klar" på 13 – spiller mens nedtellingen fortsetter
-        if (count === 13 && !readySoundPlayed) {
-            readySound.currentTime = 0;
-            readySound.play();
-            readySoundPlayed = true;
-        }
-
-        // 6–2 → korte beep
-        else if (count <= 5 && count >= 2) {
-            playBeep();
-        }
-
-        // 1 → langt beep
-        else if (count === 1) {
-            document.getElementById("finalBeep").play();
-        }
-
+    startCountdownTimer = setInterval(() => {
         count--;
+        document.getElementById("display").innerText = count;
 
-        // 0 → START (stille)
-        if (count < 0) {
-            clearInterval(interval);
-
-            display.innerText = "START";
-
-            setTimeout(() => {
-                display.classList.remove("countdown");
-                startTimer();
-            }, 1000);
+        if (count === 13 && !readyPlayed) {
+            readySound.play();
+            readyPlayed = true;
         }
 
+        if ([5,4,3,2].includes(count)) playBeep();
+        if (count === 1) document.getElementById("finalBeep").play();
+
+        if (count <= 0) {
+            clearInterval(startCountdownTimer);
+            startCountdownTimer = null;
+            startTimer();
+        }
     }, 1000);
 }
 
-
-/* ------------- START TIMER ------------- */
+/* ---------- HOVEDTIMER ---------- */
 
 function startTimer() {
-    clearInterval(timer);          // 🔴 STOPP eventuelle gamle timere
-    timer = null;
+    clearInterval(timer);
 
-    work = Number(workInput.value);
-    rest = Number(restInput.value);
-    stations = Number(stationsInput.value);
-    rounds = Number(roundsInput.value);
-    roundPause = Number(roundPauseInput.value);
-
+    mode = "work";
     currentStation = 1;
     currentRound = 1;
-    mode = "work";
     timeLeft = work;
 
     updateDisplay();
     timer = setInterval(tick, 1000);
 }
 
-
-/* ------------- PAUSE ------------- */
-
-function togglePause() {
-    paused = !paused;
-
-    if (paused) {
-        clearInterval(timer);
-        document.getElementById("sub").innerText = "Pause";
-    } else {
-        timer = setInterval(tick, 1000);
-    }
-}
-
-/* ------------- STOPP (MED MODAL) ------------- */
-
-function openStopModal() {
-    document.getElementById("confirmModal").style.display = "flex";
-}
-
-function closeModal() {
-    document.getElementById("confirmModal").style.display = "none";
-}
-
-function confirmStop() {
-    closeModal();
-    stopTimer(true);
-}
-
-function stopTimer(resetDisplay = true) {
-    if (timer) {
-        clearInterval(timer);
-        timer = null;
-    }
-
-    paused = false;
-    mode = "idle";
-    currentStation = 1;
-    currentRound = 1;
-    timeLeft = 0;
-
-    if (resetDisplay) {
-        document.getElementById("display").classList.remove("countdown");
-        document.getElementById("display").innerText = "00";
-        document.getElementById("sub").innerText = "Stoppet";
-    }
-}
-
-/* ------------- TICK ------------- */
-
-/* ------------- TICK ------------- */
-
 function tick() {
     if (paused) return;
+    if (timeLeft <= 0) return;
 
     timeLeft--;
     updateDisplay();
 
-    /* 🔊 Pause-varsel ved 12 sek igjen (kun rundepause) */
+    // 🔔 Rundepause-varsel
     if (mode === "roundPause" && timeLeft === 12) {
-        const pauseSound = document.getElementById("pauseWarningSound");
-        pauseSound.currentTime = 0;
-        pauseSound.play();
+        document.getElementById("pauseWarningSound").play();
     }
 
-    /* 🔊 5–4–3–2–1 nedtelling */
-    if (timeLeft === 4 || timeLeft === 3 || timeLeft === 2 || timeLeft === 1) {
-        if (timeLeft === 1) {
-            const isLastStation =
-                (mode === "work" && currentStation === stations);
-
-            if (isLastStation) {
-                document.getElementById("roundEndSound").play();
-            } else {
-                document.getElementById("finalBeep").play();
-            }
-        } else {
-            playBeep();
-        }
-    }
+    // 🔊 Nedtelling
+    if ([5,4,3,2].includes(timeLeft)) playBeep();
+    if (timeLeft === 1) document.getElementById("finalBeep").play();
 
     if (timeLeft > 0) return;
 
-    /* -------- OVERGANGER -------- */
+    /* ----- OVERGANGER ----- */
 
     if (mode === "work") {
         if (currentStation === stations) {
             currentRound++;
-            if (currentRound > rounds) {
-                finish();
-                return;
-            }
+            if (currentRound > rounds) return finish();
 
             mode = "roundPause";
             timeLeft = roundPause;
@@ -441,80 +196,39 @@ function tick() {
     updateDisplay();
 }
 
+/* ---------- KONTROLLER ---------- */
 
+function togglePause() {
+    paused = !paused;
 
-/* ------------- FERDIG ------------- */
+    if (!paused) {
+        clearInterval(timer);
+        timer = setInterval(tick, 1000);
+    }
+}
+
+function stopAllTimers() {
+    clearInterval(timer);
+    clearInterval(startCountdownTimer);
+    timer = null;
+    startCountdownTimer = null;
+}
 
 function finish() {
     clearInterval(timer);
-    mode = "done";
-
     document.getElementById("roundEndSound").play();
-
-    document.getElementById("display").innerText = "Ferdig!";
-    document.getElementById("sub").innerText = "";
+    document.getElementById("display").innerText = "FERDIG";
 }
-
-/* ------------- DISPLAY ------------- */
-
-function updateDisplay() {
-    if (mode === "idle") return;
-
-    document.getElementById("display").innerText = timeLeft;
-
-    let txt = "";
-    if (mode === "work") txt = "Arbeid";
-    else if (mode === "rest") txt = "Pause";
-    else if (mode === "roundPause") txt = "Runde-pause";
-
-    document.getElementById("sub").innerHTML =
-        `${txt}<br>Runde ${currentRound}/${rounds} | Stasjon ${currentStation}/${stations}`;
-}
-
-/* ------------- SNØ ------------- */
-
-const canvas = document.getElementById('snow');
-const ctx = canvas.getContext('2d');
-let flakes = [];
-
-function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
-resize();
-window.onresize = resize;
-
-function createFlake() {
-    return {
-        x: Math.random() * canvas.width,
-        y: -10,
-        size: Math.random() * 4 + 1,
-        speed: Math.random() * 1 + 0.5,
-        drift: Math.random() * 1 - 0.5
-    };
-}
-
-function updateSnow() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    if (flakes.length < 150) flakes.push(createFlake());
-
-    flakes.forEach((f, i) => {
-        f.y += f.speed;
-        f.x += f.drift;
-
-        ctx.fillStyle = "rgba(255,255,255,0.8)";
-        ctx.beginPath();
-        ctx.arc(f.x, f.y, f.size, 0, Math.PI * 2);
-        ctx.fill();
-
-        if (f.y > canvas.height) flakes[i] = createFlake();
-    });
-
-    requestAnimationFrame(updateSnow);
-}
-updateSnow();
 </script>
+
+<!-- SERVICE WORKER AV UNDER UTVIKLING -->
+<!--
+<script>
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js");
+}
+</script>
+-->
 
 </body>
 </html>
