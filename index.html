@@ -377,8 +377,6 @@ function stopTimer(resetDisplay = true) {
 
 /* ------------- TICK ------------- */
 
-/* ------------- TICK ------------- */
-
 function tick() {
     if (paused) return;
 
@@ -412,9 +410,14 @@ function tick() {
 
     /* -------- OVERGANGER -------- */
 
-    if (mode === "work") {
-        if (currentStation === stations) {
-            currentRound++;
+if (mode === "work") {
+    if (currentStation === stations) {
+
+        // 🔊 slutt på runde (hver runde)
+        document.getElementById("roundEndSound").play();
+
+        currentRound++;
+
             if (currentRound > rounds) {
                 finish();
                 return;
