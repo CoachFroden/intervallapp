@@ -385,6 +385,7 @@ function tick() {
     timeLeft--;
     updateDisplay();
 
+
     /* 🔊 Pause-varsel ved 12 sek igjen (kun rundepause) */
     if (mode === "roundPause" && timeLeft === 12) {
         const pauseSound = document.getElementById("pauseWarningSound");
@@ -441,7 +442,7 @@ else if (mode === "roundPause") {
 }
 
 updateDisplay();
-
+}
 
 
 
