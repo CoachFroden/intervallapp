@@ -98,14 +98,6 @@ button.pause { background: #f1c40f; }
     text-shadow: 0 0 25px white;
 }
 
-.blink {
-    animation: blinkEffect 0.25s linear;
-}
-@keyframes blinkEffect {
-    from { filter: brightness(1); }
-    to   { filter: brightness(2.2); }
-}
-
 /* -------- MODAL -------- */
 
 .modal {
@@ -185,6 +177,10 @@ button.pause { background: #f1c40f; }
 <audio id="beep2" src="beep.mp3"></audio>
 <audio id="finalBeep" src="langbeep.mp3"></audio>
 <audio id="roundEndSound" src="endbuzzer.wav"></audio>
+<audio id="readySound" src="gjordereklare.mp3"></audio>
+<audio id="pauseWarningSound" src="pauseneroveromti.mp3"></audio>
+
+
 
 <script>
 let work, rest, stations, rounds, roundPause;
@@ -194,6 +190,7 @@ let timeLeft = 0;
 let mode = "idle";
 let timer = null;
 let paused = false;
+let readySoundPlayed = false;
 
 /* -------- DOBBELT BEEP SYSTEM -------- */
 let beepToggle = false;
@@ -210,38 +207,72 @@ function playBeep() {
 
 function startSequence() {
     stopTimer(false);
-    runStartCountdown();
+
+    const pauseSound = document.getElementById("pauseWarningSound");
+    pauseSound.volume = 0;
+
+    pauseSound.play().then(() => {
+        setTimeout(() => {
+            pauseSound.pause();
+            pauseSound.currentTime = 0;
+            pauseSound.volume = 1;
+        }, 0);
+    }).catch(() => {});
+
+    runFullStartCountdown();
 }
 
-function runStartCountdown() {
-    let count = 5;
-    const display = document.getElementById("display");
-    const longBeep = document.getElementById("finalBeep");
 
-    let interval = setInterval(() => {
+
+
+function runFullStartCountdown() {
+    let count = 15;
+    readySoundPlayed = false;
+
+    const display = document.getElementById("display");
+    const readySound = document.getElementById("readySound");
+
+    const interval = setInterval(() => {
+
         display.classList.add("countdown");
         display.innerText = count;
 
-        blink();
+        /* 🔊 LYD */
 
-        if (count > 1) playBeep();
-        else longBeep.play();
+        // Start "gjør deg klar" på 13 – spiller mens nedtellingen fortsetter
+        if (count === 13 && !readySoundPlayed) {
+            readySound.currentTime = 0;
+            readySound.play();
+            readySoundPlayed = true;
+        }
+
+        // 6–2 → korte beep
+        else if (count <= 5 && count >= 2) {
+            playBeep();
+        }
+
+        // 1 → langt beep
+        else if (count === 1) {
+            document.getElementById("finalBeep").play();
+        }
 
         count--;
 
-        if (count === 0) {
+        // 0 → START (stille)
+        if (count < 0) {
             clearInterval(interval);
 
-            display.innerText = "START!";
-            longBeep.play();
+            display.innerText = "START";
 
             setTimeout(() => {
                 display.classList.remove("countdown");
                 startTimer();
-            }, 2000);
+            }, 1000);
         }
+
     }, 1000);
 }
+
 
 /* ------------- START TIMER ------------- */
 
@@ -313,56 +344,54 @@ function stopTimer(resetDisplay = true) {
 function tick() {
     if (paused) return;
 
-    const longBeep = document.getElementById("finalBeep");
-    const roundEndSound = document.getElementById("roundEndSound");
-
-    /* --- NEDTELLING 3–2–1 --- */
-    if (timeLeft === 3 || timeLeft === 2 || timeLeft === 1) {
-        blink();
-
-        if (timeLeft === 1) {
-            const isLastStation = (mode === "work" && currentStation === stations);
-            if (!isLastStation) longBeep.play();
-        } else {
-            playBeep();  // <-- alltid beep på 3 og 2
-        }
-    }
-
-    /* --- 10 SEK FØR RUNDEPAUSE SLUTT --- */
-    if (mode === "roundPause" && timeLeft === 15) {
-        longBeep.play();
-    }
-
     timeLeft--;
     updateDisplay();
 
+    /* 🔊 Pause-varsel ved 12 sek igjen */
+    if (mode === "roundPause" && timeLeft === 12) {
+        const pauseSound = document.getElementById("pauseWarningSound");
+        pauseSound.currentTime = 0;
+        pauseSound.play();
+    }
+
+    /* 🔊 5–4–3–2–1 nedtelling */
+    if (timeLeft === 4 || timeLeft === 3 || timeLeft === 2 || timeLeft === 1) {
+        if (timeLeft === 1) {
+            const isLastStation =
+                (mode === "work" && currentStation === stations);
+
+            if (isLastStation) {
+                document.getElementById("roundEndSound").play();
+            } else {
+                document.getElementById("finalBeep").play();
+            }
+        } else {
+            playBeep();
+        }
+    }
+
     if (timeLeft > 0) return;
 
-    /* ---------------- OVERGANGER ---------------- */
+    /* -------- OVERGANGER -------- */
 
     if (mode === "work") {
         if (currentStation === stations) {
-            roundEndSound.play();
-
             currentRound++;
             if (currentRound > rounds) return finish();
 
             mode = "roundPause";
             timeLeft = roundPause;
             currentStation = 1;
-
         } else {
             mode = "rest";
             timeLeft = rest;
         }
     }
-
     else if (mode === "rest") {
         currentStation++;
         mode = "work";
         timeLeft = work;
     }
-
     else if (mode === "roundPause") {
         mode = "work";
         timeLeft = work;
@@ -371,11 +400,7 @@ function tick() {
     updateDisplay();
 }
 
-/* ---------- BLINK ---------- */
-function blink() {
-    document.body.classList.add("blink");
-    setTimeout(() => document.body.classList.remove("blink"), 300);
-}
+
 
 /* ------------- FERDIG ------------- */
 
@@ -452,5 +477,3 @@ updateSnow();
 
 </body>
 </html>
-
-
