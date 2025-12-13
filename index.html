@@ -221,8 +221,38 @@ function startSequence() {
         }, 0);
     }).catch(() => {});
 
+const beep1 = document.getElementById("beep1");
+const beep2 = document.getElementById("beep2");
+const longBeep = document.getElementById("finalBeep");
+
+// korte beep (begge må unlockes)
+beep1.volume = 0;
+beep2.volume = 0;
+
+beep1.play().then(() => {
+    beep1.pause();
+    beep1.currentTime = 0;
+    beep1.volume = 1;
+}).catch(() => {});
+
+beep2.play().then(() => {
+    beep2.pause();
+    beep2.currentTime = 0;
+    beep2.volume = 1;
+}).catch(() => {});
+
+// lang beep
+longBeep.volume = 0;
+longBeep.play().then(() => {
+    longBeep.pause();
+    longBeep.currentTime = 0;
+    longBeep.volume = 1;
+}).catch(() => {});
+
+
     runFullStartCountdown();
 }
+
 
 
 
