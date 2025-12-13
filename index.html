@@ -377,20 +377,15 @@ function stopTimer(resetDisplay = true) {
 
 /* ------------- TICK ------------- */
 
+/* ------------- TICK ------------- */
+
 function tick() {
     if (paused) return;
-    if (timeLeft <= 0) return;   // 🛑 stopp negative verdier
-
-    timeLeft--;
-    updateDisplay();
-    ...
-}
-
 
     timeLeft--;
     updateDisplay();
 
-    /* 🔊 Pause-varsel ved 12 sek igjen */
+    /* 🔊 Pause-varsel ved 12 sek igjen (kun rundepause) */
     if (mode === "roundPause" && timeLeft === 12) {
         const pauseSound = document.getElementById("pauseWarningSound");
         pauseSound.currentTime = 0;
@@ -420,7 +415,10 @@ function tick() {
     if (mode === "work") {
         if (currentStation === stations) {
             currentRound++;
-            if (currentRound > rounds) return finish();
+            if (currentRound > rounds) {
+                finish();
+                return;
+            }
 
             mode = "roundPause";
             timeLeft = roundPause;
