@@ -249,6 +249,16 @@ longBeep.play().then(() => {
     longBeep.volume = 1;
 }).catch(() => {});
 
+// 🔔 endbuzzer (runde-slutt)
+const roundEndSound = document.getElementById("roundEndSound");
+roundEndSound.volume = 0;
+roundEndSound.play().then(() => {
+    roundEndSound.pause();
+    roundEndSound.currentTime = 0;
+    roundEndSound.volume = 1;
+}).catch(() => {});
+
+
 
     runFullStartCountdown();
 }
@@ -380,68 +390,60 @@ function stopTimer(resetDisplay = true) {
 
 function tick() {
     if (paused) return;
-    if (timeLeft <= 0) return;   // 🛑 VIKTIG
+    if (timeLeft <= 0) return;
 
     timeLeft--;
     updateDisplay();
 
-
-    /* 🔊 Pause-varsel ved 12 sek igjen (kun rundepause) */
     if (mode === "roundPause" && timeLeft === 12) {
         const pauseSound = document.getElementById("pauseWarningSound");
         pauseSound.currentTime = 0;
         pauseSound.play();
     }
 
-  /* 🔊 5–4–3–2–1 nedtelling */
-if (timeLeft === 4 || timeLeft === 3 || timeLeft === 2 || timeLeft === 1) {
-    if (timeLeft === 1) {
-        const isLastStation =
-            (mode === "work" && currentStation === stations);
+    if (timeLeft === 4 || timeLeft === 3 || timeLeft === 2 || timeLeft === 1) {
+        if (timeLeft === 1) {
+            const isLastStation =
+                (mode === "work" && currentStation === stations);
 
-        if (isLastStation) {
-            document.getElementById("roundEndSound").play();
+            if (isLastStation) {
+                document.getElementById("roundEndSound").play();
+            } else {
+                document.getElementById("finalBeep").play();
+            }
         } else {
-            document.getElementById("finalBeep").play();
+            playBeep();
         }
-    } else {
-        playBeep();
     }
-}
-
 
     if (timeLeft > 0) return;
 
-/* -------- OVERGANGER -------- */
-
-if (mode === "work") {
-    if (currentStation === stations) {
-        currentRound++;
-
-        if (currentRound > rounds) {
-            finish();
-            return;
+    if (mode === "work") {
+        if (currentStation === stations) {
+            currentRound++;
+            if (currentRound > rounds) {
+                finish();
+                return;
+            }
+            mode = "roundPause";
+            timeLeft = roundPause;
+            currentStation = 1;
+        } else {
+            mode = "rest";
+            timeLeft = rest;
         }
-
-        mode = "roundPause";
-        timeLeft = roundPause;
-        currentStation = 1;
-    } else {
-        mode = "rest";
-        timeLeft = rest;
     }
-}
-else if (mode === "rest") {
-    currentStation++;
-    mode = "work";
-    timeLeft = work;
-}
-else if (mode === "roundPause") {
-    mode = "work";
-    timeLeft = work;
-}
+    else if (mode === "rest") {
+        currentStation++;
+        mode = "work";
+        timeLeft = work;
+    }
+    else if (mode === "roundPause") {
+        mode = "work";
+        timeLeft = work;
+    }
 
-updateDisplay();
+    updateDisplay();
 }
 
 
