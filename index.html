@@ -294,11 +294,10 @@ function runFullStartCountdown() {
         else if (startCountdownCount <= 5 && startCountdownCount >= 2) {
             playBeep();
         }
-        else if (startCountdownCount === 1) {
-            const longBeep = document.getElementById("finalBeep");
-            longBeep.currentTime = 0;
-            longBeep.play();
-        }
+else if (count === 1) {
+    playBeep();   // samme korte beep som ellers
+}
+
 
         startCountdownCount--;
 
@@ -465,11 +464,6 @@ if (isLastStation) {
 function finish() {
     clearInterval(timer);
     mode = "done";
-
-    const endSound = document.getElementById("roundEndSound");
-endSound.currentTime = 0;
-endSound.play();
-
 
     document.getElementById("display").innerText = "Ferdig!";
     document.getElementById("sub").innerText = "";
