@@ -193,6 +193,9 @@ let mode = "idle";
 let timer = null;
 let paused = false;
 let readySoundPlayed = false;
+let startCountdownTimer = null;
+let startCountdownCount = 0;
+
 
 /* -------- DOBBELT BEEP SYSTEM -------- */
 let beepToggle = false;
@@ -209,6 +212,8 @@ function playBeep() {
 
 function startSequence() {
     stopTimer(false);
+    paused = false;   // reset pause
+
 
     const pauseSound = document.getElementById("pauseWarningSound");
     pauseSound.volume = 0;
@@ -268,52 +273,48 @@ roundEndSound.play().then(() => {
 
 
 function runFullStartCountdown() {
-    let count = 15;
+    startCountdownCount = 15;
     readySoundPlayed = false;
 
     const display = document.getElementById("display");
     const readySound = document.getElementById("readySound");
 
-    const interval = setInterval(() => {
+    clearInterval(startCountdownTimer);
 
-        display.classList.add("countdown");
-        display.innerText = count;
+    startCountdownTimer = setInterval(() => {
+        if (paused) return;   // ⏸️ pause fungerer nå
 
-        /* 🔊 LYD */
+        display.innerText = startCountdownCount;
 
-        // Start "gjør deg klar" på 13 – spiller mens nedtellingen fortsetter
-        if (count === 13 && !readySoundPlayed) {
+        if (startCountdownCount === 13 && !readySoundPlayed) {
             readySound.currentTime = 0;
             readySound.play();
             readySoundPlayed = true;
         }
-
-        // 6–2 → korte beep
-        else if (count <= 5 && count >= 2) {
+        else if (startCountdownCount <= 5 && startCountdownCount >= 2) {
             playBeep();
         }
-
-        // 1 → langt beep
-        else if (count === 1) {
-            document.getElementById("finalBeep").play();
+        else if (startCountdownCount === 1) {
+            const longBeep = document.getElementById("finalBeep");
+            longBeep.currentTime = 0;
+            longBeep.play();
         }
 
-        count--;
+        startCountdownCount--;
 
-        // 0 → START (stille)
-        if (count < 0) {
-            clearInterval(interval);
+        if (startCountdownCount < 0) {
+            clearInterval(startCountdownTimer);
+            startCountdownTimer = null;
 
             display.innerText = "START";
 
             setTimeout(() => {
-                display.classList.remove("countdown");
                 startTimer();
             }, 1000);
         }
-
     }, 1000);
 }
+
 
 
 /* ------------- START TIMER ------------- */
@@ -373,6 +374,11 @@ function stopTimer(resetDisplay = true) {
         timer = null;
     }
 
+    if (startCountdownTimer) {
+        clearInterval(startCountdownTimer);
+        startCountdownTimer = null;
+    }
+
     paused = false;
     mode = "idle";
     currentStation = 1;
@@ -406,11 +412,16 @@ function tick() {
             const isLastStation =
                 (mode === "work" && currentStation === stations);
 
-            if (isLastStation) {
-                document.getElementById("roundEndSound").play();
-            } else {
-                document.getElementById("finalBeep").play();
-            }
+if (isLastStation) {
+    const endSound = document.getElementById("roundEndSound");
+    endSound.currentTime = 0;
+    endSound.play();
+} else {
+    const longBeep = document.getElementById("finalBeep");
+    longBeep.currentTime = 0;
+    longBeep.play();
+}
+
         } else {
             playBeep();
         }
@@ -455,7 +466,10 @@ function finish() {
     clearInterval(timer);
     mode = "done";
 
-    document.getElementById("roundEndSound").play();
+    const endSound = document.getElementById("roundEndSound");
+endSound.currentTime = 0;
+endSound.play();
+
 
     document.getElementById("display").innerText = "Ferdig!";
     document.getElementById("sub").innerText = "";
