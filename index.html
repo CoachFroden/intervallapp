@@ -185,6 +185,8 @@ button.pause { background: #f1c40f; }
 
 
 <script>
+let audioUnlocked = false;
+let audioContext = null;
 let work, rest, stations, rounds, roundPause;
 let currentStation = 1;
 let currentRound = 1;
@@ -214,63 +216,15 @@ function startSequence() {
     stopTimer(false);
     paused = false;   // reset pause
 
-
-    const pauseSound = document.getElementById("pauseWarningSound");
-    pauseSound.volume = 0;
-
-    pauseSound.play().then(() => {
-        setTimeout(() => {
-            pauseSound.pause();
-            pauseSound.currentTime = 0;
-            pauseSound.volume = 1;
-        }, 0);
-    }).catch(() => {});
-
-const beep1 = document.getElementById("beep1");
-const beep2 = document.getElementById("beep2");
-const longBeep = document.getElementById("finalBeep");
-
-// korte beep (begge må unlockes)
-beep1.volume = 0;
-beep2.volume = 0;
-
-beep1.play().then(() => {
-    beep1.pause();
-    beep1.currentTime = 0;
-    beep1.volume = 1;
-}).catch(() => {});
-
-beep2.play().then(() => {
-    beep2.pause();
-    beep2.currentTime = 0;
-    beep2.volume = 1;
-}).catch(() => {});
-
-// lang beep
-longBeep.volume = 0;
-longBeep.play().then(() => {
-    longBeep.pause();
-    longBeep.currentTime = 0;
-    longBeep.volume = 1;
-}).catch(() => {});
-
-// 🔔 endbuzzer (runde-slutt)
-const roundEndSound = document.getElementById("roundEndSound");
-roundEndSound.volume = 0;
-roundEndSound.play().then(() => {
-    roundEndSound.pause();
-    roundEndSound.currentTime = 0;
-    roundEndSound.volume = 1;
-}).catch(() => {});
-
+if (!audioUnlocked) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    audioContext.resume();   // 🔓 iOS unlock – HELT STILLE
+    audioUnlocked = true;
+}
 
 
     runFullStartCountdown();
 }
-
-
-
-
 
 function runFullStartCountdown() {
     startCountdownCount = 15;
