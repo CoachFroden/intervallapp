@@ -291,12 +291,13 @@ function runFullStartCountdown() {
             readySound.play();
             readySoundPlayed = true;
         }
-        else if (startCountdownCount <= 5 && startCountdownCount >= 2) {
-            playBeep();
-        }
-else if (count === 1) {
-    playBeep();   // samme korte beep som ellers
+else if (startCountdownCount <= 5 && startCountdownCount >= 2) {
+    playBeep();
 }
+else if (startCountdownCount === 1) {
+    playBeep();
+}
+
 
 
         startCountdownCount--;
