@@ -399,11 +399,16 @@ function tick() {
             const isLastStation =
                 (mode === "work" && currentStation === stations);
 
-            if (isLastStation) {
-                document.getElementById("roundEndSound").play();
-            } else {
-                document.getElementById("finalBeep").play();
-            }
+     if (isLastStation) {
+    const endSound = document.getElementById("roundEndSound");
+    endSound.currentTime = 0;
+    endSound.play();
+} else {
+    const longBeep = document.getElementById("finalBeep");
+    longBeep.currentTime = 0;
+    longBeep.play();
+}
+
         } else {
             playBeep();
         }
@@ -449,8 +454,6 @@ function tick() {
 function finish() {
     clearInterval(timer);
     mode = "done";
-
-    document.getElementById("roundEndSound").play();
 
     document.getElementById("display").innerText = "Ferdig!";
     document.getElementById("sub").innerText = "";
