@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="no">
 <head>
@@ -7,13 +6,6 @@
 <title>Intervall App</title>
 
 <link rel="manifest" href="manifest.json">
-<!--
-<script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js");
-}
-</script>
--->
 
 <style>
 body {
@@ -101,7 +93,7 @@ button.pause { background: #f1c40f; }
     text-shadow: 0 0 25px white;
 }
 
-/* -------- MODAL -------- */
+/* MODAL */
 
 .modal {
     display: none;
@@ -139,7 +131,6 @@ button.pause { background: #f1c40f; }
 
 .modal-btn.cancel { background: #2ecc71; }
 .modal-btn.confirm { background: #e74c3c; }
-
 </style>
 </head>
 
@@ -150,7 +141,6 @@ button.pause { background: #f1c40f; }
 <h1 class="glow">Intervall App</h1>
 <h2 class="glow winter-title">Vintertrening 2026 ❄️</h2>
 
-<!-- ------------ STOPP-MODAL ------------ -->
 <div id="confirmModal" class="modal">
     <div class="modal-content">
         <h3>Avslutte økten?</h3>
@@ -175,17 +165,40 @@ button.pause { background: #f1c40f; }
 <button class="pause" onclick="togglePause()">Pause</button>
 <button class="stop" onclick="openStopModal()">Stopp</button>
 
-<!-- LYDER -->
-<audio id="beep1" src="beep.wav"></audio>
-<audio id="beep2" src="beep.wav"></audio>
-<audio id="finalBeep" src="langbeep.wav"></audio>
-<audio id="roundEndSound" src="endbuzzer.wav"></audio>
-<audio id="readySound" src="gjordereklare.mp3"></audio>
-<audio id="pauseWarningSound" src="pauseneroveromti.mp3"></audio>
-
-
-
 <script>
+/* ---------- iOS-SIKKER LYD ---------- */
+
+let audioCtx;
+const sounds = {};
+
+async function initAudio() {
+    if (audioCtx) return;
+
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    await loadSound("beep", "beep.wav");
+    await loadSound("longBeep", "langbeep.wav");
+    await loadSound("roundEnd", "endbuzzer.wav");
+    await loadSound("ready", "gjordereklare.mp3");
+    await loadSound("pauseWarn", "pauseneroveromti.mp3");
+}
+
+async function loadSound(name, url) {
+    const res = await fetch(url);
+    const buf = await res.arrayBuffer();
+    sounds[name] = await audioCtx.decodeAudioData(buf);
+}
+
+function playSound(name) {
+    if (!audioCtx || !sounds[name]) return;
+    const src = audioCtx.createBufferSource();
+    src.buffer = sounds[name];
+    src.connect(audioCtx.destination);
+    src.start();
+}
+
+/* ---------- TIMER LOGIKK ---------- */
+
 let work, rest, stations, rounds, roundPause;
 let currentStation = 1;
 let currentRound = 1;
@@ -195,123 +208,46 @@ let timer = null;
 let paused = false;
 let readySoundPlayed = false;
 
-/* -------- DOBBELT BEEP SYSTEM -------- */
-let beepToggle = false;
-
-function playBeep() {
-    const b = beepToggle ? document.getElementById("beep1") 
-                         : document.getElementById("beep2");
-    b.currentTime = 0;
-    b.play();
-    beepToggle = !beepToggle;
-}
-
-/* ------------- START MED 5–1 NEDTELLING ------------- */
-
-function startSequence() {
+async function startSequence() {
     stopTimer(false);
-
-    const pauseSound = document.getElementById("pauseWarningSound");
-    pauseSound.volume = 0;
-
-    pauseSound.play().then(() => {
-        setTimeout(() => {
-            pauseSound.pause();
-            pauseSound.currentTime = 0;
-            pauseSound.volume = 1;
-        }, 0);
-    }).catch(() => {});
-
-const beep1 = document.getElementById("beep1");
-const beep2 = document.getElementById("beep2");
-const longBeep = document.getElementById("finalBeep");
-
-// korte beep (begge må unlockes)
-beep1.volume = 0;
-beep2.volume = 0;
-
-beep1.play().then(() => {
-    beep1.pause();
-    beep1.currentTime = 0;
-    beep1.volume = 1;
-}).catch(() => {});
-
-beep2.play().then(() => {
-    beep2.pause();
-    beep2.currentTime = 0;
-    beep2.volume = 1;
-}).catch(() => {});
-
-// lang beep
-longBeep.volume = 0;
-longBeep.play().then(() => {
-    longBeep.pause();
-    longBeep.currentTime = 0;
-    longBeep.volume = 1;
-}).catch(() => {});
-
-
+    await initAudio(); // 🔑 unlock iOS lyd
     runFullStartCountdown();
 }
-
-
-
-
 
 function runFullStartCountdown() {
     let count = 15;
     readySoundPlayed = false;
 
     const display = document.getElementById("display");
-    const readySound = document.getElementById("readySound");
 
     const interval = setInterval(() => {
-
         display.classList.add("countdown");
         display.innerText = count;
 
-        /* 🔊 LYD */
-
-        // Start "gjør deg klar" på 13 – spiller mens nedtellingen fortsetter
         if (count === 13 && !readySoundPlayed) {
-            readySound.currentTime = 0;
-            readySound.play();
+            playSound("ready");
             readySoundPlayed = true;
-        }
-
-        // 6–2 → korte beep
-        else if (count <= 5 && count >= 2) {
-            playBeep();
-        }
-
-        // 1 → langt beep
-        else if (count === 1) {
-            document.getElementById("finalBeep").play();
+        } else if (count <= 5 && count >= 2) {
+            playSound("beep");
+        } else if (count === 1) {
+            playSound("longBeep");
         }
 
         count--;
 
-        // 0 → START (stille)
         if (count < 0) {
             clearInterval(interval);
-
             display.innerText = "START";
-
             setTimeout(() => {
                 display.classList.remove("countdown");
                 startTimer();
             }, 1000);
         }
-
     }, 1000);
 }
 
-
-/* ------------- START TIMER ------------- */
-
 function startTimer() {
-    clearInterval(timer);          // 🔴 STOPP eventuelle gamle timere
-    timer = null;
+    clearInterval(timer);
 
     work = Number(workInput.value);
     rest = Number(restInput.value);
@@ -328,57 +264,42 @@ function startTimer() {
     timer = setInterval(tick, 1000);
 }
 
-
-/* ------------- PAUSE ------------- */
-
 function togglePause() {
     paused = !paused;
-
     if (paused) {
         clearInterval(timer);
-        document.getElementById("sub").innerText = "Pause";
+        sub.innerText = "Pause";
     } else {
         timer = setInterval(tick, 1000);
     }
 }
 
-/* ------------- STOPP (MED MODAL) ------------- */
-
 function openStopModal() {
-    document.getElementById("confirmModal").style.display = "flex";
+    confirmModal.style.display = "flex";
 }
-
 function closeModal() {
-    document.getElementById("confirmModal").style.display = "none";
+    confirmModal.style.display = "none";
 }
-
 function confirmStop() {
     closeModal();
     stopTimer(true);
 }
 
-function stopTimer(resetDisplay = true) {
-    if (timer) {
-        clearInterval(timer);
-        timer = null;
-    }
-
+function stopTimer(reset = true) {
+    clearInterval(timer);
+    timer = null;
     paused = false;
     mode = "idle";
     currentStation = 1;
     currentRound = 1;
     timeLeft = 0;
 
-    if (resetDisplay) {
-        document.getElementById("display").classList.remove("countdown");
-        document.getElementById("display").innerText = "00";
-        document.getElementById("sub").innerText = "Stoppet";
+    if (reset) {
+        display.innerText = "00";
+        sub.innerText = "Stoppet";
+        display.classList.remove("countdown");
     }
 }
-
-/* ------------- TICK ------------- */
-
-/* ------------- TICK ------------- */
 
 function tick() {
     if (paused) return;
@@ -386,46 +307,25 @@ function tick() {
     timeLeft--;
     updateDisplay();
 
-    /* 🔊 Pause-varsel ved 12 sek igjen (kun rundepause) */
     if (mode === "roundPause" && timeLeft === 12) {
-        const pauseSound = document.getElementById("pauseWarningSound");
-        pauseSound.currentTime = 0;
-        pauseSound.play();
+        playSound("pauseWarn");
     }
 
-    /* 🔊 5–4–3–2–1 nedtelling */
-    if (timeLeft === 4 || timeLeft === 3 || timeLeft === 2 || timeLeft === 1) {
+    if ([4,3,2,1].includes(timeLeft)) {
         if (timeLeft === 1) {
-            const isLastStation =
-                (mode === "work" && currentStation === stations);
-
-     if (isLastStation) {
-    const endSound = document.getElementById("roundEndSound");
-    endSound.currentTime = 0;
-    endSound.play();
-} else {
-    const longBeep = document.getElementById("finalBeep");
-    longBeep.currentTime = 0;
-    longBeep.play();
-}
-
+            const lastStation = (mode === "work" && currentStation === stations);
+            playSound(lastStation ? "roundEnd" : "longBeep");
         } else {
-            playBeep();
+            playSound("beep");
         }
     }
 
     if (timeLeft > 0) return;
 
-    /* -------- OVERGANGER -------- */
-
     if (mode === "work") {
         if (currentStation === stations) {
             currentRound++;
-            if (currentRound > rounds) {
-                finish();
-                return;
-            }
-
+            if (currentRound > rounds) return finish();
             mode = "roundPause";
             timeLeft = roundPause;
             currentStation = 1;
@@ -433,13 +333,11 @@ function tick() {
             mode = "rest";
             timeLeft = rest;
         }
-    }
-    else if (mode === "rest") {
+    } else if (mode === "rest") {
         currentStation++;
         mode = "work";
         timeLeft = work;
-    }
-    else if (mode === "roundPause") {
+    } else if (mode === "roundPause") {
         mode = "work";
         timeLeft = work;
     }
@@ -447,35 +345,24 @@ function tick() {
     updateDisplay();
 }
 
-
-
-/* ------------- FERDIG ------------- */
-
 function finish() {
     clearInterval(timer);
-    mode = "done";
-
-    document.getElementById("display").innerText = "Ferdig!";
-    document.getElementById("sub").innerText = "";
+    display.innerText = "Ferdig!";
+    sub.innerText = "";
 }
-
-/* ------------- DISPLAY ------------- */
 
 function updateDisplay() {
     if (mode === "idle") return;
+    display.innerText = timeLeft;
 
-    document.getElementById("display").innerText = timeLeft;
+    let txt = mode === "work" ? "Arbeid" :
+              mode === "rest" ? "Pause" : "Runde-pause";
 
-    let txt = "";
-    if (mode === "work") txt = "Arbeid";
-    else if (mode === "rest") txt = "Pause";
-    else if (mode === "roundPause") txt = "Runde-pause";
-
-    document.getElementById("sub").innerHTML =
+    sub.innerHTML =
         `${txt}<br>Runde ${currentRound}/${rounds} | Stasjon ${currentStation}/${stations}`;
 }
 
-/* ------------- SNØ ------------- */
+/* ---------- SNØ ---------- */
 
 const canvas = document.getElementById('snow');
 const ctx = canvas.getContext('2d');
@@ -493,25 +380,22 @@ function createFlake() {
         x: Math.random() * canvas.width,
         y: -10,
         size: Math.random() * 4 + 1,
-        speed: Math.random() * 1 + 0.5,
-        drift: Math.random() * 1 - 0.5
+        speed: Math.random() + 0.5,
+        drift: Math.random() - 0.5
     };
 }
 
 function updateSnow() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     if (flakes.length < 150) flakes.push(createFlake());
 
     flakes.forEach((f, i) => {
         f.y += f.speed;
         f.x += f.drift;
-
         ctx.fillStyle = "rgba(255,255,255,0.8)";
         ctx.beginPath();
         ctx.arc(f.x, f.y, f.size, 0, Math.PI * 2);
         ctx.fill();
-
         if (f.y > canvas.height) flakes[i] = createFlake();
     });
 
