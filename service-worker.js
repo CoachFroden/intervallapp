@@ -1,9 +1,11 @@
-const CACHE_NAME = "intervall-v3";
+const CACHE_NAME = "intervall-v4";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css",
+  "./station-guide.css",
   "./app.js",
+  "./exercises.js",
   "./manifest.json",
   "./icon-180.png",
   "./icon-192.png",
