@@ -1,10 +1,14 @@
 {
   "name": "Intervall App",
   "short_name": "Intervall",
-  "start_url": "index.html",
+  "description": "En presis og enkel intervalltimer for trening.",
+  "lang": "no",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#0b1e3d",
-  "theme_color": "#0b1e3d",
+  "orientation": "portrait-primary",
+  "background_color": "#08111f",
+  "theme_color": "#08111f",
   "icons": [
     {
       "src": "icon-192.png",

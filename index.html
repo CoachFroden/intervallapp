@@ -2,412 +2,112 @@
 <html lang="no">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#08111f">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="En presis og enkel intervalltimer for trening.">
 <title>Intervall App</title>
-
 <link rel="manifest" href="manifest.json">
-
-<!-- iOS support -->
 <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Intervall">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-<style>
-body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(180deg, #0b1e3d, #0d335f, #1a4c7e);
-    color: white;
-    text-align: center;
-    padding: 20px;
-    margin: 0;
-    overflow-y: auto;
-}
-
-#snow {
-    position: fixed;
-    inset: 0;
-    z-index: -10;
-    pointer-events: none;
-}
-
-.glow, h1, h2, label, #sub, #display {
-    text-shadow: 0 0 8px #7cc9ff, 0 0 16px #7cc9ff;
-}
-
-h1 { margin-bottom: 5px; }
-.winter-title {
-    margin-top: -5px;
-    font-size: 24px;
-    opacity: 0.9;
-}
-
-#display {
-    font-size: 80px;
-    margin-top: 20px;
-}
-#sub {
-    font-size: 26px;
-    opacity: 0.8;
-    margin-bottom: 20px;
-}
-
-.controls {
-    margin-top: 20px;
-    text-align: left;
-    display: inline-block;
-    padding: 15px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.10);
-    backdrop-filter: blur(4px);
-    border: 1px solid rgba(255,255,255,0.15);
-}
-
-.controls .row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 260px;
-    margin: 10px auto;
-}
-
-.controls input {
-    font-size: 20px;
-    width: 90px;
-    padding: 4px;
-    text-align: center;
-    border-radius: 6px;
-}
-
-button {
-    background: #28a745;
-    color: white;
-    border: none;
-    padding: 18px 40px;
-    margin: 10px;
-    font-size: 24px;
-    border-radius: 12px;
-    cursor: pointer;
-    width: 80%;
-}
-button.stop { background: #dc3545; }
-button.pause { background: #f1c40f; }
-
-.countdown {
-    font-size: 120px;
-    margin-top: 40px;
-    text-shadow: 0 0 25px white;
-}
-
-/* MODAL */
-
-.modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.55);
-    backdrop-filter: blur(4px);
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
-
-.modal-content {
-    background: rgba(255,255,255,0.15);
-    padding: 25px;
-    border-radius: 14px;
-    width: 80%;
-    max-width: 350px;
-    color: white;
-    text-align: center;
-    box-shadow: 0 0 22px rgba(120,180,255,0.7);
-    border: 1px solid rgba(255,255,255,0.4);
-    backdrop-filter: blur(10px);
-}
-
-.modal-btn {
-    padding: 12px 20px;
-    margin: 10px;
-    border-radius: 10px;
-    font-size: 18px;
-    border: none;
-    cursor: pointer;
-    width: 40%;
-}
-
-.modal-btn.cancel { background: #2ecc71; }
-.modal-btn.confirm { background: #e74c3c; }
-</style>
+<link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-
-<canvas id="snow"></canvas>
-
-<h1 class="glow">Intervall App</h1>
-<h2 class="glow winter-title">Vintertrening 2026 ❄️</h2>
-
-<div id="confirmModal" class="modal">
-    <div class="modal-content">
-        <h3>Avslutte økten?</h3>
-        <p>Vil du nullstille og gå tilbake til start?</p>
-        <button class="modal-btn cancel" onclick="closeModal()">Fortsett</button>
-        <button class="modal-btn confirm" onclick="confirmStop()">Nullstill</button>
+<main class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">⏱️</div>
+      <div>
+        <h1>Intervall</h1>
+        <p>Presis timer for treningsøkten</p>
+      </div>
     </div>
+    <div id="appStatus" class="status-dot">Klar</div>
+  </header>
+
+  <section id="setupPanel" class="panel setup" aria-labelledby="setupTitle">
+    <div class="section-head">
+      <h2 id="setupTitle">Sett opp økten</h2>
+      <span>Lagres automatisk</span>
+    </div>
+
+    <div class="presets" aria-label="Raske oppsett">
+      <button class="preset" type="button" data-preset="standard">Standard <small>30/15 · 10 × 2</small></button>
+      <button class="preset" type="button" data-preset="sprint">Sprint <small>20/20 · 8 × 3</small></button>
+      <button class="preset" type="button" data-preset="hard">Hard <small>45/15 · 8 × 2</small></button>
+    </div>
+
+    <div class="settings-grid">
+      <div class="field"><label for="workInput">Arbeid</label><div class="field-line"><input id="workInput" inputmode="numeric" type="number" min="1" max="3600" value="30"><span class="unit">sek</span></div></div>
+      <div class="field"><label for="restInput">Pause</label><div class="field-line"><input id="restInput" inputmode="numeric" type="number" min="0" max="3600" value="15"><span class="unit">sek</span></div></div>
+      <div class="field"><label for="stationsInput">Stasjoner</label><div class="field-line"><input id="stationsInput" inputmode="numeric" type="number" min="1" max="100" value="10"><span class="unit">stk</span></div></div>
+      <div class="field"><label for="roundsInput">Runder</label><div class="field-line"><input id="roundsInput" inputmode="numeric" type="number" min="1" max="50" value="2"><span class="unit">stk</span></div></div>
+      <div class="field"><label for="roundPauseInput">Rundepause</label><div class="field-line"><input id="roundPauseInput" inputmode="numeric" type="number" min="0" max="3600" value="90"><span class="unit">sek</span></div></div>
+      <div class="field"><label for="prepInput">Gjør klar</label><div class="field-line"><input id="prepInput" inputmode="numeric" type="number" min="0" max="120" value="15"><span class="unit">sek</span></div></div>
+    </div>
+
+    <div class="summary" aria-live="polite">
+      <div><span>Total tid</span><strong id="totalTime">–</strong></div>
+      <div><span>Arbeid</span><strong id="workTime">–</strong></div>
+      <div><span>Intervaller</span><strong id="intervalCount">–</strong></div>
+    </div>
+
+    <button id="startButton" class="start-btn" type="button">Start økten</button>
+    <p class="hint">Lyd aktiveres når du trykker start. Skjermen holdes våken automatisk når nettleseren støtter det.</p>
+  </section>
+
+  <section id="timerPanel" class="panel timer-panel" aria-live="polite">
+    <div id="modeBadge" class="mode-badge">Gjør klar</div>
+    <div class="timer-wrap">
+      <svg class="progress-ring" viewBox="0 0 220 220" aria-hidden="true">
+        <circle class="ring-bg" cx="110" cy="110" r="99"></circle>
+        <circle id="ringValue" class="ring-value" cx="110" cy="110" r="99"></circle>
+      </svg>
+      <div id="timerValue" class="timer-value">15</div>
+      <div id="timerCaption" class="timer-caption">sekunder</div>
+    </div>
+
+    <div class="progress-meta">
+      <div class="meta-card"><span>Runde</span><strong id="roundMeta">1 / 2</strong></div>
+      <div class="meta-card"><span>Stasjon</span><strong id="stationMeta">1 / 10</strong></div>
+    </div>
+    <div id="nextLine" class="next-line">Neste: <strong>Arbeid</strong></div>
+    <div class="total-progress" aria-label="Total fremdrift"><div id="totalProgress"></div></div>
+
+    <div class="timer-actions">
+      <button id="pauseButton" class="primary-btn" type="button">Pause</button>
+      <button id="skipButton" class="secondary-btn" type="button">Hopp videre</button>
+      <button id="stopButton" class="danger-btn" type="button">Avslutt økten</button>
+    </div>
+  </section>
+
+  <section id="donePanel" class="panel done-panel">
+    <div class="done-icon" aria-hidden="true">✓</div>
+    <h2>Økten er ferdig</h2>
+    <p>Økten er gjennomført. Oppsettet er klart til å brukes igjen.</p>
+    <div class="done-stats">
+      <div><span>Tid</span><strong id="doneTime">–</strong></div>
+      <div><span>Arbeid</span><strong id="doneWork">–</strong></div>
+      <div><span>Intervaller</span><strong id="doneIntervals">–</strong></div>
+    </div>
+    <button id="newSessionButton" class="start-btn" type="button">Ny økt</button>
+  </section>
+</main>
+
+<div id="stopModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="stopTitle">
+  <div class="modal-card">
+    <h3 id="stopTitle">Avslutte økten?</h3>
+    <p>Timeren nullstilles, men oppsettet ditt blir beholdt.</p>
+    <div class="modal-actions">
+      <button id="continueButton" class="secondary-btn" type="button">Fortsett</button>
+      <button id="confirmStopButton" class="primary-btn" type="button">Avslutt</button>
+    </div>
+  </div>
 </div>
+<div id="toast" class="toast" role="status"></div>
 
-<div class="controls">
-    <div class="row"><label>Arbeid (sek):</label><input id="workInput" type="number" value="30"></div>
-    <div class="row"><label>Pause (sek):</label><input id="restInput" type="number" value="15"></div>
-    <div class="row"><label>Stasjoner:</label><input id="stationsInput" type="number" value="10"></div>
-    <div class="row"><label>Runder:</label><input id="roundsInput" type="number" value="2"></div>
-    <div class="row"><label>Rundepause:</label><input id="roundPauseInput" type="number" value="90"></div>
-</div>
-
-<div id="display">00</div>
-<div id="sub">Trykk start</div>
-
-<button onclick="startSequence()">Start</button>
-<button class="pause" onclick="togglePause()">Pause</button>
-<button class="stop" onclick="openStopModal()">Stopp</button>
-
-<script>
-/* ---------- iOS-SIKKER LYD ---------- */
-
-let audioCtx;
-const sounds = {};
-
-async function initAudio() {
-    if (audioCtx) return;
-
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-    await loadSound("beep", "beep.wav");
-    await loadSound("longBeep", "langbeep.wav");
-    await loadSound("roundEnd", "endbuzzer.wav");
-    await loadSound("ready", "gjordereklare.mp3");
-    await loadSound("pauseWarn", "pauseneroveromti.mp3");
-}
-
-async function loadSound(name, url) {
-    const res = await fetch(url);
-    const buf = await res.arrayBuffer();
-    sounds[name] = await audioCtx.decodeAudioData(buf);
-}
-
-function playSound(name) {
-    if (!audioCtx || !sounds[name]) return;
-    const src = audioCtx.createBufferSource();
-    src.buffer = sounds[name];
-    src.connect(audioCtx.destination);
-    src.start();
-}
-
-/* ---------- TIMER LOGIKK ---------- */
-
-let work, rest, stations, rounds, roundPause;
-let currentStation = 1;
-let currentRound = 1;
-let timeLeft = 0;
-let mode = "idle";
-let timer = null;
-let paused = false;
-let readySoundPlayed = false;
-
-async function startSequence() {
-    stopTimer(false);
-    await initAudio(); // 🔑 unlock iOS lyd
-    runFullStartCountdown();
-}
-
-function runFullStartCountdown() {
-    let count = 15;
-    readySoundPlayed = false;
-
-    const display = document.getElementById("display");
-
-    const interval = setInterval(() => {
-        display.classList.add("countdown");
-        display.innerText = count;
-
-        if (count === 13 && !readySoundPlayed) {
-            playSound("ready");
-            readySoundPlayed = true;
-        } else if (count <= 5 && count >= 2) {
-            playSound("beep");
-        } else if (count === 1) {
-            playSound("longBeep");
-        }
-
-        count--;
-
-        if (count < 0) {
-            clearInterval(interval);
-            display.innerText = "START";
-            setTimeout(() => {
-                display.classList.remove("countdown");
-                startTimer();
-            }, 1000);
-        }
-    }, 1000);
-}
-
-function startTimer() {
-    clearInterval(timer);
-
-    work = Number(workInput.value);
-    rest = Number(restInput.value);
-    stations = Number(stationsInput.value);
-    rounds = Number(roundsInput.value);
-    roundPause = Number(roundPauseInput.value);
-
-    currentStation = 1;
-    currentRound = 1;
-    mode = "work";
-    timeLeft = work;
-
-    updateDisplay();
-    timer = setInterval(tick, 1000);
-}
-
-function togglePause() {
-    paused = !paused;
-    if (paused) {
-        clearInterval(timer);
-        sub.innerText = "Pause";
-    } else {
-        timer = setInterval(tick, 1000);
-    }
-}
-
-function openStopModal() {
-    confirmModal.style.display = "flex";
-}
-function closeModal() {
-    confirmModal.style.display = "none";
-}
-function confirmStop() {
-    closeModal();
-    stopTimer(true);
-}
-
-function stopTimer(reset = true) {
-    clearInterval(timer);
-    timer = null;
-    paused = false;
-    mode = "idle";
-    currentStation = 1;
-    currentRound = 1;
-    timeLeft = 0;
-
-    if (reset) {
-        display.innerText = "00";
-        sub.innerText = "Stoppet";
-        display.classList.remove("countdown");
-    }
-}
-
-function tick() {
-    if (paused) return;
-
-    timeLeft--;
-    updateDisplay();
-
-    if (mode === "roundPause" && timeLeft === 12) {
-        playSound("pauseWarn");
-    }
-
-    if ([4,3,2,1].includes(timeLeft)) {
-        if (timeLeft === 1) {
-            const lastStation = (mode === "work" && currentStation === stations);
-            playSound(lastStation ? "roundEnd" : "longBeep");
-        } else {
-            playSound("beep");
-        }
-    }
-
-    if (timeLeft > 0) return;
-
-    if (mode === "work") {
-        if (currentStation === stations) {
-            currentRound++;
-            if (currentRound > rounds) return finish();
-            mode = "roundPause";
-            timeLeft = roundPause;
-            currentStation = 1;
-        } else {
-            mode = "rest";
-            timeLeft = rest;
-        }
-    } else if (mode === "rest") {
-        currentStation++;
-        mode = "work";
-        timeLeft = work;
-    } else if (mode === "roundPause") {
-        mode = "work";
-        timeLeft = work;
-    }
-
-    updateDisplay();
-}
-
-function finish() {
-    clearInterval(timer);
-    display.innerText = "Ferdig!";
-    sub.innerText = "";
-}
-
-function updateDisplay() {
-    if (mode === "idle") return;
-    display.innerText = timeLeft;
-
-    let txt = mode === "work" ? "Arbeid" :
-              mode === "rest" ? "Pause" : "Runde-pause";
-
-    sub.innerHTML =
-        `${txt}<br>Runde ${currentRound}/${rounds} | Stasjon ${currentStation}/${stations}`;
-}
-
-/* ---------- SNØ ---------- */
-
-const canvas = document.getElementById('snow');
-const ctx = canvas.getContext('2d');
-let flakes = [];
-
-function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
-resize();
-window.onresize = resize;
-
-function createFlake() {
-    return {
-        x: Math.random() * canvas.width,
-        y: -10,
-        size: Math.random() * 4 + 1,
-        speed: Math.random() + 0.5,
-        drift: Math.random() - 0.5
-    };
-}
-
-function updateSnow() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (flakes.length < 150) flakes.push(createFlake());
-
-    flakes.forEach((f, i) => {
-        f.y += f.speed;
-        f.x += f.drift;
-        ctx.fillStyle = "rgba(255,255,255,0.8)";
-        ctx.beginPath();
-        ctx.arc(f.x, f.y, f.size, 0, Math.PI * 2);
-        ctx.fill();
-        if (f.y > canvas.height) flakes[i] = createFlake();
-    });
-
-    requestAnimationFrame(updateSnow);
-}
-updateSnow();
-</script>
-
+<script src="app.js" defer></script>
 </body>
 </html>
