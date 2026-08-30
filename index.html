@@ -13,6 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Intervall">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="station-guide.css">
 </head>
 <body>
 <main class="app">
@@ -54,6 +55,17 @@
       <div><span>Intervaller</span><strong id="intervalCount">–</strong></div>
     </div>
 
+    <details class="station-guide">
+      <summary>
+        <div class="station-guide-title">
+          <strong>Dagens 10 stasjoner</strong>
+          <span>Opptil 20 spillere · 2 jobber samtidig på hver stasjon</span>
+        </div>
+        <span class="station-guide-toggle" aria-hidden="true">+</span>
+      </summary>
+      <div id="exerciseList" class="exercise-list"></div>
+    </details>
+
     <button id="startButton" class="start-btn" type="button">Start økten</button>
     <p class="hint">Lyd aktiveres når du trykker start. Skjermen holdes våken automatisk når nettleseren støtter det.</p>
   </section>
@@ -73,6 +85,16 @@
       <div class="meta-card"><span>Runde</span><strong id="roundMeta">1 / 2</strong></div>
       <div class="meta-card"><span>Stasjon</span><strong id="stationMeta">1 / 10</strong></div>
     </div>
+
+    <div id="currentExercise" class="current-exercise">
+      <div id="exerciseEyebrow" class="exercise-eyebrow">Første stasjon · stasjon 1</div>
+      <div class="current-exercise-main">
+        <strong id="exerciseName">Knebøyhopp</strong>
+        <span id="exerciseFocus" class="exercise-focus">Spenst</span>
+      </div>
+      <div id="exerciseCue" class="exercise-cue">Kontrollert ned · eksplosivt opp · myk landing</div>
+    </div>
+
     <div id="nextLine" class="next-line">Neste: <strong>Arbeid</strong></div>
     <div class="total-progress" aria-label="Total fremdrift"><div id="totalProgress"></div></div>
 
@@ -109,5 +131,6 @@
 <div id="toast" class="toast" role="status"></div>
 
 <script src="app.js" defer></script>
+<script src="exercises.js" defer></script>
 </body>
 </html>
