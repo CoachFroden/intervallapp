@@ -160,11 +160,13 @@ function vibrate(pattern = 35) {
 }
 
 async function requestWakeLock() {
-  if (!("wakeLock" in navigator) || wakeLock || mode === "idle" || mode === "done") return;
+  if (!("wakeLock" in navigator) || wakeLock || document.visibilityState !== "visible") return;
   try {
     wakeLock = await navigator.wakeLock.request("screen");
     wakeLock.addEventListener("release", () => { wakeLock = null; });
-  } catch (error) { console.debug("Wake Lock utilgjengelig", error); }
+  } catch (error) {
+    console.debug("Wake Lock utilgjengelig", error);
+  }
 }
 
 async function releaseWakeLock() {
@@ -366,7 +368,6 @@ function togglePause() {
     isPaused = true;
     clearTimeout(loopId);
     loopId = null;
-    releaseWakeLock();
   } else {
     const elapsedInSegment = Math.max(0, segmentDurationMs - pausedRemainingMs);
     segmentStartedAt = Date.now() - elapsedInSegment;
@@ -409,10 +410,10 @@ function stopSession() {
   currentStation = 1;
   segmentDurationMs = 0;
   elapsedBeforeSegmentMs = 0;
-  releaseWakeLock();
   closeStopModal();
   setView("setup");
   updateSummary();
+  requestWakeLock();
 }
 
 function finishSession() {
@@ -420,11 +421,11 @@ function finishSession() {
   loopId = null;
   mode = "done";
   isPaused = false;
-  releaseWakeLock();
   els.doneTime.textContent = formatDuration(totalWorkoutMs / 1000);
   els.doneWork.textContent = formatDuration(config.work * config.stations * config.rounds);
   els.doneIntervals.textContent = `${config.stations * config.rounds}`;
   setView("done");
+  requestWakeLock();
   vibrate([90, 60, 90, 60, 130]);
 }
 
@@ -432,6 +433,7 @@ function resetToSetup() {
   mode = "idle";
   setView("setup");
   updateSummary();
+  requestWakeLock();
 }
 
 document.querySelectorAll(".preset").forEach((button) => {
@@ -467,13 +469,20 @@ document.addEventListener("keydown", (event) => {
 });
 
 document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible" && !isPaused && mode !== "idle" && mode !== "done") {
+  if (document.visibilityState === "visible") {
     requestWakeLock();
-    timerLoop();
+    if (!isPaused && mode !== "idle" && mode !== "done") timerLoop();
+  } else {
+    releaseWakeLock();
   }
 });
 
+window.addEventListener("pageshow", requestWakeLock);
+document.addEventListener("pointerdown", requestWakeLock, { passive: true });
+document.addEventListener("touchstart", requestWakeLock, { passive: true });
+
 window.addEventListener("beforeunload", (event) => {
+  releaseWakeLock();
   if (mode !== "idle" && mode !== "done") {
     event.preventDefault();
     event.returnValue = "";
@@ -489,3 +498,4 @@ if ("serviceWorker" in navigator) {
 loadSettings();
 normalizeInputs();
 setView("setup");
+requestWakeLock();
