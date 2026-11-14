@@ -11,10 +11,11 @@ const els = {
 };
 
 const SETTINGS_KEY = "intervall-settings-v2";
+const STATION_MIGRATION_KEY = "intervall-stations-12-migrated";
 const PRESETS = {
   standard: { work: 30, rest: 15, stations: 12, rounds: 2, roundPause: 90, prep: 15 },
-  sprint: { work: 20, rest: 20, stations: 8, rounds: 3, roundPause: 75, prep: 15 },
-  hard: { work: 45, rest: 15, stations: 8, rounds: 2, roundPause: 90, prep: 15 }
+  sprint: { work: 20, rest: 20, stations: 12, rounds: 3, roundPause: 75, prep: 15 },
+  hard: { work: 45, rest: 15, stations: 12, rounds: 2, roundPause: 90, prep: 15 }
 };
 const RING_CIRC = 2 * Math.PI * 99;
 els.ring.style.strokeDasharray = `${RING_CIRC}`;
@@ -57,7 +58,7 @@ function readConfig() {
   return {
     work: clampInt(els.work.value, 1, 3600, 30),
     rest: clampInt(els.rest.value, 0, 3600, 15),
-    stations: clampInt(els.stations.value, 1, 100, 10),
+    stations: clampInt(els.stations.value, 1, 100, 12),
     rounds: clampInt(els.rounds.value, 1, 50, 2),
     roundPause: clampInt(els.roundPause.value, 0, 3600, 90),
     prep: clampInt(els.prep.value, 0, 120, 15)
@@ -111,7 +112,15 @@ function saveSettings() {
 function loadSettings() {
   try {
     const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY));
-    if (saved && typeof saved === "object") writeConfig({ ...PRESETS.standard, ...saved });
+    if (saved && typeof saved === "object") {
+      // Migrate old 10-station settings once, preserving the user's other choices.
+      if (!localStorage.getItem(STATION_MIGRATION_KEY)) {
+        if (Number(saved.stations) === 10) saved.stations = 12;
+        localStorage.setItem(STATION_MIGRATION_KEY, "1");
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(saved));
+      }
+      writeConfig({ ...PRESETS.standard, ...saved });
+    }
   } catch (_) {}
 }
 
