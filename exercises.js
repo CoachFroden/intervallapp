@@ -10,73 +10,73 @@ const EXERCISES = [
   },
   {
     "number": 2,
-    "name": "Reaksjonssprint",
-    "focus": "Hurtighet",
-    "short": "Reager på signal · akselerer 5–10 meter",
-    "description": "Start på trenerens signal, eller reager på en partners bevegelse. Sprint 5–10 meter. Korte forsøk med god pause. Trenger fri løpebane; egner seg best tidlig i økten."
-  },
-  {
-    "number": 3,
-    "name": "Lengdehopp fra stillestående",
-    "focus": "Spenst",
-    "short": "Eksplosivt frem · land mykt · hold balansen",
-    "description": "Stå med begge føtter i gulvet. Bruk armene og hopp langt frem. Land mykt med knær over tær og hold balansen i to sekunder. Gjør 4–6 kvalitetshopp, ikke hopp kontinuerlig."
-  },
-  {
-    "number": 4,
-    "name": "Skøytehopp",
-    "focus": "Spenst og stabilitet",
-    "short": "Hopp sideveis · land på ett bein · kontroll",
-    "description": "Hopp fra ett bein til det andre sideveis. Finn balansen før neste hopp. Hold avstanden kort nok til å unngå nabostasjonen. Gjør 6–8 kontrollerte hopp per side."
-  },
-  {
-    "number": 5,
-    "name": "Knebøy",
-    "focus": "Beinstyrke",
-    "short": "Hælene i gulvet · knær over tær · kontroll",
-    "description": "Stå omtrent skulderbredt. Senk deg kontrollert så langt du klarer med god teknikk, og press opp igjen. Hold hælene i gulvet og knærne i samme retning som tærne. Ca. 8–12 repetisjoner."
-  },
-  {
-    "number": 6,
-    "name": "Utfall bakover",
-    "focus": "Ettbeinsstyrke",
-    "short": "Steg bak · kontroll ned · press opp",
-    "description": "Ta et kontrollert steg bakover, senk kroppen og press opp gjennom fremre fot. Bytt bein og hold overkroppen stabil. Ca. 6–8 repetisjoner per bein."
-  },
-  {
-    "number": 7,
-    "name": "Ettbeins hofteløft",
-    "focus": "Sete og bakside lår",
-    "short": "Én fot i gulvet · løft hoften · senk rolig",
-    "description": "Ligg på ryggen med ett kne bøyd og foten i gulvet. Løft hoften uten å vri bekkenet, og senk kontrollert. Bytt bein. Ca. 8–10 repetisjoner per bein."
-  },
-  {
-    "number": 8,
-    "name": "Hamstring walkouts / Nordic hamstring",
-    "focus": "Bakside lår",
-    "short": "Walkouts nå · Nordic med sikkert ankel-feste senere",
-    "description": "Alternativ A – Hamstring walkouts (uten utstyr): Ligg på ryggen med bøyde knær og hælene i gulvet. Løft hoften og gå med små hælsteg rolig utover og tilbake. Start med 4–6 kontrollerte repetisjoner. Alternativ B – Nordic hamstring (når sikkert feste er klart): Stå på knærne på matte med anklene godt festet. Len kroppen rolig frem, brems med bakside lår og ta imot med hendene. Start med 2–4 korte, kontrollerte repetisjoner. Stopp ved smerte. Bruk kun feste som er kontrollert for belastning og stabilitet."
-  },
-  {
-    "number": 9,
-    "name": "Copenhagen (kort variant)",
-    "focus": "Lyskestyrke",
-    "short": "Kne på lav benk · løft hoften · kort hold",
-    "description": "Ligg på siden med øverste kne støttet på en lav, stabil benk og underarmen i gulvet. Løft hoften kontrollert og hold kort. Start forsiktig med 3–5 korte hold per side. Enklere variant: sideleie med benløft."
-  },
-  {
-    "number": 10,
     "name": "Armhevinger",
     "focus": "Overkropp",
     "short": "Rett kropp · kontrollert ned · press opp",
     "description": "Hold kroppen rett, senk brystet kontrollert og press opp igjen. Bruk en benk eller vegg for lettere variant. Gjør 6–12 gode repetisjoner fremfor flest mulig."
   },
   {
-    "number": 11,
+    "number": 3,
+    "name": "Knebøy",
+    "focus": "Beinstyrke",
+    "short": "Hælene i gulvet · knær over tær · kontroll",
+    "description": "Stå omtrent skulderbredt. Senk deg kontrollert så langt du klarer med god teknikk, og press opp igjen. Hold hælene i gulvet og knærne i samme retning som tærne. Ca. 8–12 repetisjoner."
+  },
+  {
+    "number": 4,
     "name": "Sideplanke",
     "focus": "Kjernestabilitet",
     "short": "Albue under skulder · rett kropp · hold",
     "description": "Støtt på underarmen med albuen under skulderen. Løft hoften og hold kroppen i en rett linje. Bytt side halvveis. Start med 10–20 sekunder per side; bøy knærne for lettere variant."
+  },
+  {
+    "number": 5,
+    "name": "Lengdehopp fra stillestående",
+    "focus": "Spenst",
+    "short": "Eksplosivt frem · land mykt · hold balansen",
+    "description": "Stå med begge føtter i gulvet. Bruk armene og hopp langt frem. Land mykt med knær over tær og hold balansen i to sekunder. Gjør 4–6 kvalitetshopp, ikke hopp kontinuerlig."
+  },
+  {
+    "number": 6,
+    "name": "Hamstring walkouts / Nordic hamstring",
+    "focus": "Bakside lår",
+    "short": "Walkouts nå · Nordic med sikkert ankel-feste senere",
+    "description": "Alternativ A – Hamstring walkouts (uten utstyr): Ligg på ryggen med bøyde knær og hælene i gulvet. Løft hoften og gå med små hælsteg rolig utover og tilbake. Start med 4–6 kontrollerte repetisjoner. Alternativ B – Nordic hamstring (når sikkert feste er klart): Stå på knærne på matte med anklene godt festet. Len kroppen rolig frem, brems med bakside lår og ta imot med hendene. Start med 2–4 korte, kontrollerte repetisjoner. Stopp ved smerte. Bruk kun feste som er kontrollert for belastning og stabilitet."
+  },
+  {
+    "number": 7,
+    "name": "Reaksjonssprint",
+    "focus": "Hurtighet",
+    "short": "Reager på signal · akselerer 5–10 meter",
+    "description": "Start på trenerens signal, eller reager på en partners bevegelse. Sprint 5–10 meter. Korte forsøk med god pause. Trenger fri løpebane; egner seg best tidlig i økten."
+  },
+  {
+    "number": 8,
+    "name": "Copenhagen (kort variant)",
+    "focus": "Lyskestyrke",
+    "short": "Kne på lav benk · løft hoften · kort hold",
+    "description": "Ligg på siden med øverste kne støttet på en lav, stabil benk og underarmen i gulvet. Løft hoften kontrollert og hold kort. Start forsiktig med 3–5 korte hold per side. Enklere variant: sideleie med benløft."
+  },
+  {
+    "number": 9,
+    "name": "Skøytehopp",
+    "focus": "Spenst og stabilitet",
+    "short": "Hopp sideveis · land på ett bein · kontroll",
+    "description": "Hopp fra ett bein til det andre sideveis. Finn balansen før neste hopp. Hold avstanden kort nok til å unngå nabostasjonen. Gjør 6–8 kontrollerte hopp per side."
+  },
+  {
+    "number": 10,
+    "name": "Ettbeins hofteløft",
+    "focus": "Sete og bakside lår",
+    "short": "Én fot i gulvet · løft hoften · senk rolig",
+    "description": "Ligg på ryggen med ett kne bøyd og foten i gulvet. Løft hoften uten å vri bekkenet, og senk kontrollert. Bytt bein. Ca. 8–10 repetisjoner per bein."
+  },
+  {
+    "number": 11,
+    "name": "Utfall bakover / hoppende utfall",
+    "focus": "Ettbeinsstyrke",
+    "short": "Vanlige utfall for styrke · hoppende for viderekomne",
+    "description": "Alternativ A – Utfall bakover: Ta et kontrollert steg bakover, senk kroppen og press opp gjennom fremre fot. Bytt bein. Gjør 6–8 repetisjoner per bein. Alternativ B – Hoppende utfall: Start i utfallsposisjon, hopp kontrollert opp, bytt bein i luften og land mykt med god balanse. Gjør 4–6 hopp per bein med pauser, ikke kontinuerlig i hele intervallet. Velg hoppende variant først når vanlige utfall mestres uten smerter."
   },
   {
     "number": 12,
