@@ -12,7 +12,7 @@ const els = {
 
 const SETTINGS_KEY = "intervall-settings-v2";
 const PRESETS = {
-  standard: { work: 30, rest: 15, stations: 10, rounds: 2, roundPause: 90, prep: 15 },
+  standard: { work: 30, rest: 15, stations: 12, rounds: 2, roundPause: 90, prep: 15 },
   sprint: { work: 20, rest: 20, stations: 8, rounds: 3, roundPause: 75, prep: 15 },
   hard: { work: 45, rest: 15, stations: 8, rounds: 2, roundPause: 90, prep: 15 }
 };
