@@ -45,10 +45,10 @@ const EXERCISES = [
   },
   {
     "number": 7,
-    "name": "Reaksjonssprint",
-    "focus": "Hurtighet",
-    "short": "Reager på signal · akselerer 5–10 meter",
-    "description": "Start på trenerens signal, eller reager på en partners bevegelse. Sprint 5–10 meter. Korte forsøk med god pause. Trenger fri løpebane; egner seg best tidlig i økten."
+    "name": "Planke med skuldertouch",
+    "focus": "Mage og kjernestabilitet",
+    "short": "Stå i høy planke · berør motsatt skulder · hold hoftene rolige",
+    "description": "Start i armhevingsposisjon med hendene under skuldrene og føttene litt fra hverandre. Løft én hånd og berør motsatt skulder, sett hånden rolig ned og bytt side. Hold hofter og overkropp så stabile som mulig, uten å svaie eller rotere. Gjør 8–12 rolige berøringer totalt. Lettere variant: Stå med hendene på en stabil benk."
   },
   {
     "number": 8,
