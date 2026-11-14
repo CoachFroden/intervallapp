@@ -37,7 +37,7 @@
     </div>
 
     <div class="presets" aria-label="Raske oppsett">
-      <button class="preset" type="button" data-preset="standard">Standard <small>30/15 · 10 × 2</small></button>
+      <button class="preset" type="button" data-preset="standard">Standard <small>30/15 · 12 × 2</small></button>
       <button class="preset" type="button" data-preset="sprint">Sprint <small>20/20 · 8 × 3</small></button>
       <button class="preset" type="button" data-preset="hard">Hard <small>45/15 · 8 × 2</small></button>
     </div>
@@ -45,7 +45,7 @@
     <div class="settings-grid">
       <div class="field"><label for="workInput">Arbeid</label><div class="field-line"><input id="workInput" inputmode="numeric" type="number" min="1" max="3600" value="30"><span class="unit">sek</span></div></div>
       <div class="field"><label for="restInput">Pause</label><div class="field-line"><input id="restInput" inputmode="numeric" type="number" min="0" max="3600" value="15"><span class="unit">sek</span></div></div>
-      <div class="field"><label for="stationsInput">Stasjoner</label><div class="field-line"><input id="stationsInput" inputmode="numeric" type="number" min="1" max="100" value="10"><span class="unit">stk</span></div></div>
+      <div class="field"><label for="stationsInput">Stasjoner</label><div class="field-line"><input id="stationsInput" inputmode="numeric" type="number" min="1" max="100" value="12"><span class="unit">stk</span></div></div>
       <div class="field"><label for="roundsInput">Runder</label><div class="field-line"><input id="roundsInput" inputmode="numeric" type="number" min="1" max="50" value="2"><span class="unit">stk</span></div></div>
       <div class="field"><label for="roundPauseInput">Rundepause</label><div class="field-line"><input id="roundPauseInput" inputmode="numeric" type="number" min="0" max="3600" value="90"><span class="unit">sek</span></div></div>
       <div class="field"><label for="prepInput">Gjør klar</label><div class="field-line"><input id="prepInput" inputmode="numeric" type="number" min="0" max="120" value="15"><span class="unit">sek</span></div></div>
@@ -60,8 +60,8 @@
     <details class="station-guide">
       <summary>
         <div class="station-guide-title">
-          <strong>Dagens 10 stasjoner</strong>
-          <span>Opptil 20 spillere · 2 jobber samtidig på hver stasjon</span>
+          <strong>Dagens 12 stasjoner</strong>
+          <span>Tilpass antall spillere per stasjon · sprint krever fri løpebane</span>
         </div>
         <span class="station-guide-toggle" aria-hidden="true">+</span>
       </summary>
@@ -85,16 +85,16 @@
 
     <div class="progress-meta">
       <div class="meta-card"><span>Runde</span><strong id="roundMeta">1 / 2</strong></div>
-      <div class="meta-card"><span>Stasjon</span><strong id="stationMeta">1 / 10</strong></div>
+      <div class="meta-card"><span>Stasjon</span><strong id="stationMeta">1 / 12</strong></div>
     </div>
 
     <div id="currentExercise" class="current-exercise">
       <div id="exerciseEyebrow" class="exercise-eyebrow">Første stasjon · stasjon 1</div>
       <div class="current-exercise-main">
-        <strong id="exerciseName">Knebøyhopp</strong>
-        <span id="exerciseFocus" class="exercise-focus">Spenst</span>
+        <strong id="exerciseName">Sprint 5–10 meter</strong>
+        <span id="exerciseFocus" class="exercise-focus">Hurtighet</span>
       </div>
-      <div id="exerciseCue" class="exercise-cue">Kontrollert ned · eksplosivt opp · myk landing</div>
+      <div id="exerciseCue" class="exercise-cue">3–5 korte spurter · full innsats · god pause</div>
     </div>
 
     <div id="nextLine" class="next-line">Neste: <strong>Arbeid</strong></div>
