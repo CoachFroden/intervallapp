@@ -2,74 +2,88 @@
 
 const EXERCISES = [
   {
-    number: 1,
-    name: "Knebøyhopp",
-    focus: "Spenst",
-    short: "Kontrollert ned · eksplosivt opp · myk landing",
-    description: "Begge jobber samtidig. Stå omtrent skulderbredt, gå kontrollert ned, hopp eksplosivt rett opp og land mykt. Prioriter gode hopp og fine landinger fremfor flest mulig repetisjoner."
+    "number": 1,
+    "name": "Sprint 5–10 meter",
+    "focus": "Hurtighet",
+    "short": "3–5 korte spurter · full innsats · god pause",
+    "description": "Sprint 5–10 meter fra stående start. Akselerer raskt, men behold god teknikk. Gå rolig tilbake og hvil godt før neste forsøk. Trenger fri løpebane; gjennomfør gjerne før styrkesirkelen."
   },
   {
-    number: 2,
-    name: "Hamstring walkouts",
-    focus: "Hamstring",
-    short: "Hoften oppe · små steg ut og inn med hælene",
-    description: "Begge jobber samtidig. Ligg på ryggen med hælene i gulvet og løft hoften. Gå hælene rolig utover til beina nesten er strake, og gå inn igjen. Hold hoften så høyt og stabilt som mulig."
+    "number": 2,
+    "name": "Reaksjonssprint",
+    "focus": "Hurtighet",
+    "short": "Reager på signal · akselerer 5–10 meter",
+    "description": "Start på trenerens signal, eller reager på en partners bevegelse. Sprint 5–10 meter. Korte forsøk med god pause. Trenger fri løpebane; egner seg best tidlig i økten."
   },
   {
-    number: 3,
-    name: "Utfall bakover",
-    focus: "Ettbeinsstyrke",
-    short: "Steg bak · kontroll ned · press opp",
-    description: "Begge jobber samtidig. Ta et kontrollert steg bak, senk det bakerste kneet mot gulvet og press deg opp gjennom fremre fot. Bytt bein. Hold overkroppen stabil og la kneet følge retningen på tærne."
+    "number": 3,
+    "name": "Lengdehopp fra stillestående",
+    "focus": "Spenst",
+    "short": "Eksplosivt frem · land mykt · hold balansen",
+    "description": "Stå med begge føtter i gulvet. Bruk armene og hopp langt frem. Land mykt med knær over tær og hold balansen i to sekunder. Gjør 4–6 kvalitetshopp, ikke hopp kontinuerlig."
   },
   {
-    number: 4,
-    name: "Pogo hops",
-    focus: "Spenst",
-    short: "Små raske hopp · kort bakkekontakt",
-    description: "Begge jobber samtidig. Gjør små, raske hopp rett opp hovedsakelig fra anklene, med nesten strake knær. Tenk kortest mulig kontakt med gulvet, lett landing og stabil overkropp."
+    "number": 4,
+    "name": "Skøytehopp",
+    "focus": "Spenst og stabilitet",
+    "short": "Hopp sideveis · land på ett bein · kontroll",
+    "description": "Hopp fra ett bein til det andre sideveis. Finn balansen før neste hopp. Hold avstanden kort nok til å unngå nabostasjonen. Gjør 6–8 kontrollerte hopp per side."
   },
   {
-    number: 5,
-    name: "Push-ups",
-    focus: "Styrke",
-    short: "Rett kropp · kontrollert ned · press opp",
-    description: "Begge jobber samtidig. Hold kroppen som en rett linje, senk brystet kontrollert mot gulvet og press opp igjen. Velg heller færre gode repetisjoner enn å miste kroppskontrollen. Bruk knærne i gulvet ved behov."
+    "number": 5,
+    "name": "Knebøy",
+    "focus": "Beinstyrke",
+    "short": "Hælene i gulvet · knær over tær · kontroll",
+    "description": "Stå omtrent skulderbredt. Senk deg kontrollert så langt du klarer med god teknikk, og press opp igjen. Hold hælene i gulvet og knærne i samme retning som tærne. Ca. 8–12 repetisjoner."
   },
   {
-    number: 6,
-    name: "Raske føtter over linje",
-    focus: "Hurtighet",
-    short: "Korte steg · høy frekvens · lett på foten",
-    description: "Begge jobber samtidig på hver sin korte del av en gulvlinje. Flytt begge føttene raskt side–side over linjen med korte, lette steg. Ikke hopp høyt; målet er høy fotfrekvens og kort kontakt med gulvet."
+    "number": 6,
+    "name": "Utfall bakover",
+    "focus": "Ettbeinsstyrke",
+    "short": "Steg bak · kontroll ned · press opp",
+    "description": "Ta et kontrollert steg bakover, senk kroppen og press opp gjennom fremre fot. Bytt bein og hold overkroppen stabil. Ca. 6–8 repetisjoner per bein."
   },
   {
-    number: 7,
-    name: "Ettbeins hopp på stedet",
-    focus: "Spenst & stabilitet",
-    short: "Eksplosivt opp · stabil landing · bytt bein halvveis",
-    description: "Begge jobber samtidig. Gjør små, eksplosive hopp på ett bein. Land kontrollert på samme fot og finn balansen før neste hopp. Bytt bein omtrent halvveis i arbeidsperioden."
+    "number": 7,
+    "name": "Ettbeins hofteløft",
+    "focus": "Sete og bakside lår",
+    "short": "Én fot i gulvet · løft hoften · senk rolig",
+    "description": "Ligg på ryggen med ett kne bøyd og foten i gulvet. Løft hoften uten å vri bekkenet, og senk kontrollert. Bytt bein. Ca. 8–10 repetisjoner per bein."
   },
   {
-    number: 8,
-    name: "Planke med skuldertouch",
-    focus: "Kjerne",
-    short: "Stabil hofte · annenhver hånd til motsatt skulder",
-    description: "Begge jobber samtidig. Stå i høy plankeposisjon. Løft én hånd og berør motsatt skulder, annenhver side. Hold kroppen stram og hoften så rolig som mulig – målet er å motstå rotasjon."
+    "number": 8,
+    "name": "Nordic hamstring (tilpasset)",
+    "focus": "Bakside lår",
+    "short": "Partner holder anklene · brems rolig fremover",
+    "description": "Stå på knærne på en matte mens partneren holder anklene stødig. Len deg sakte frem og brems med bakside lår; ta imot med hendene. Start med svært liten bevegelse og 2–4 repetisjoner. Ikke press gjennom smerte."
   },
   {
-    number: 9,
-    name: "Skøytehopp",
-    focus: "Sideveis spenst",
-    short: "Hopp sideveis · land på ett bein · kontroll",
-    description: "Begge jobber samtidig på hver sin lille sone. Hopp sidelengs fra ett bein til det andre som en skøyteløper. Land mykt og kontrollert. Hold hoppene korte nok til at dere ikke kommer inn i nabostasjonen."
+    "number": 9,
+    "name": "Copenhagen (kort variant)",
+    "focus": "Lyskestyrke",
+    "short": "Kne på lav benk · løft hoften · kort hold",
+    "description": "Ligg på siden med øverste kne støttet på en lav, stabil benk og underarmen i gulvet. Løft hoften kontrollert og hold kort. Start forsiktig med 3–5 korte hold per side. Enklere variant: sideleie med benløft."
   },
   {
-    number: 10,
-    name: "Sprint på stedet",
-    focus: "Hurtighet",
-    short: "5 sek maks fart · 5–7 sek hvile · gjenta",
-    description: "Begge jobber samtidig. Sprint på stedet med maksimal fot- og armfrekvens i omtrent 5 sekunder. Hvil 5–7 sekunder og gjenta. Hold kroppen høy og jobb raskt med armene – ikke gjør hele arbeidsperioden som ett langt drag."
+    "number": 10,
+    "name": "Armhevinger",
+    "focus": "Overkropp",
+    "short": "Rett kropp · kontrollert ned · press opp",
+    "description": "Hold kroppen rett, senk brystet kontrollert og press opp igjen. Bruk en benk eller vegg for lettere variant. Gjør 6–12 gode repetisjoner fremfor flest mulig."
+  },
+  {
+    "number": 11,
+    "name": "Sideplanke",
+    "focus": "Kjernestabilitet",
+    "short": "Albue under skulder · rett kropp · hold",
+    "description": "Støtt på underarmen med albuen under skulderen. Løft hoften og hold kroppen i en rett linje. Bytt side halvveis. Start med 10–20 sekunder per side; bøy knærne for lettere variant."
+  },
+  {
+    "number": 12,
+    "name": "Tåhev på ett bein",
+    "focus": "Leggstyrke",
+    "short": "Helt opp på tå · senk rolig · bytt bein",
+    "description": "Stå på ett bein og hold lett i veggen for balanse. Løft hælen høyt, senk rolig og kontrollert. Gjør 10–15 repetisjoner per bein. Varier mellom strakt og lett bøyd kne."
   }
 ];
 
@@ -100,10 +114,10 @@ function renderExerciseLibrary() {
 }
 
 function readStationState() {
-  const stationText = stationMeta?.textContent || "1 / 10";
+  const stationText = stationMeta?.textContent || "1 / 12";
   const [currentRaw, totalRaw] = stationText.split("/").map((part) => Number.parseInt(part.trim(), 10));
   const current = Number.isFinite(currentRaw) ? currentRaw : 1;
-  const total = Number.isFinite(totalRaw) ? totalRaw : 10;
+  const total = Number.isFinite(totalRaw) ? totalRaw : 12;
   const phase = (modeBadge?.textContent || "").toLowerCase();
 
   if (phase.startsWith("rundepause")) return { station: 1, total, label: "Neste runde starter med" };
