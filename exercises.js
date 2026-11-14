@@ -10,10 +10,10 @@ const EXERCISES = [
   },
   {
     "number": 2,
-    "name": "Armhevinger",
-    "focus": "Overkropp",
-    "short": "Rett kropp · kontrollert ned · press opp",
-    "description": "Hold kroppen rett, senk brystet kontrollert og press opp igjen. Bruk en benk eller vegg for lettere variant. Gjør 6–12 gode repetisjoner fremfor flest mulig."
+    "name": "Medisinballkast / Armhevinger",
+    "focus": "Innkastkraft og overkropp",
+    "short": "Medisinball: 4–6 eksplosive kast · eller 6–12 armhevinger",
+    "description": "Alternativ A – Medisinballkast over hodet (for lengre innkast): Stå stødig med en lett medisinball, gjerne 1–2 kg. Før ballen bak hodet og kast eksplosivt fremover mot en vegg som tåler kast, eller til en partner på trygg avstand. Bruk hele kroppen og gjennomfør 4–6 kvalitetskast med god pause. Unngå å kaste kontinuerlig gjennom hele intervallet. Alternativ B – Armhevinger: Hold kroppen rett, senk brystet kontrollert og press opp igjen. Bruk benk eller vegg som lettere variant. Gjør 6–12 gode repetisjoner. Velg én variant per runde. Tren også ekte innkast med fotball for å forbedre teknikken."
   },
   {
     "number": 3,
