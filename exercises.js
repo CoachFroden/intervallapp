@@ -52,10 +52,10 @@ const EXERCISES = [
   },
   {
     "number": 8,
-    "name": "Nordic hamstring (tilpasset)",
+    "name": "Hamstring walkouts / Nordic hamstring",
     "focus": "Bakside lår",
-    "short": "Partner holder anklene · brems rolig fremover",
-    "description": "Stå på knærne på en matte mens partneren holder anklene stødig. Len deg sakte frem og brems med bakside lår; ta imot med hendene. Start med svært liten bevegelse og 2–4 repetisjoner. Ikke press gjennom smerte."
+    "short": "Walkouts nå · Nordic med sikkert ankel-feste senere",
+    "description": "Alternativ A – Hamstring walkouts (uten utstyr): Ligg på ryggen med bøyde knær og hælene i gulvet. Løft hoften og gå med små hælsteg rolig utover og tilbake. Start med 4–6 kontrollerte repetisjoner. Alternativ B – Nordic hamstring (når sikkert feste er klart): Stå på knærne på matte med anklene godt festet. Len kroppen rolig frem, brems med bakside lår og ta imot med hendene. Start med 2–4 korte, kontrollerte repetisjoner. Stopp ved smerte. Bruk kun feste som er kontrollert for belastning og stabilitet."
   },
   {
     "number": 9,
